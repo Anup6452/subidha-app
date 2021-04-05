@@ -23,6 +23,9 @@ class _MapsState extends State<Maps> {
   LatLng destinationLatLng;
   String sourceName = "";
   String destinationName = "";
+  TimeOfDay selectedTime;
+
+  bool switchValue = false;
 
   var geoLocator = Geolocator();
   Position currentPosition;
@@ -146,7 +149,10 @@ class _MapsState extends State<Maps> {
                         trailing: sourceLatLng == null
                             ? SizedBox.shrink()
                             : IconButton(
-                                icon: Icon(Icons.clear, color: Colors.red,),
+                                icon: Icon(
+                                  Icons.clear,
+                                  color: Colors.red,
+                                ),
                                 onPressed: () {
                                   setState(() {
                                     sourceLatLng = null;
@@ -180,7 +186,10 @@ class _MapsState extends State<Maps> {
                       trailing: destinationLatLng == null
                           ? SizedBox.shrink()
                           : IconButton(
-                              icon: Icon(Icons.clear, color: Colors.red,),
+                              icon: Icon(
+                                Icons.clear,
+                                color: Colors.red,
+                              ),
                               onPressed: () {
                                 setState(() {
                                   destinationLatLng = null;
@@ -189,10 +198,56 @@ class _MapsState extends State<Maps> {
                               },
                             ),
                     ),
-                    Text('Choose time:', style: TextStyle(color: Colors.black,),),
+                    Text(
+                      'Choose time:',
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
                     TextButton(
-                      child: Text('Click to choose time', style: TextStyle(color: Colors.blue),),
-                      onPressed: () {},
+                      child: Text(
+                        selectedTime == null
+                            ? 'Click to choose time'
+                            : selectedTime.format(context) +
+                                ' ( Click to Change time )',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      onPressed: () async {
+                        selectedTime = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        setState(() {});
+                      },
+                    ),
+                    Text('Choose ride:', style: TextStyle(color: Colors.black),),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.directions_bike, color: Colors.blue,),
+                        Switch(
+                          value: switchValue,
+                          inactiveThumbColor: Colors.blue,
+                          inactiveTrackColor: Colors.blue.withAlpha(150),
+                          activeColor: Colors.green,
+                          onChanged: (value) {
+                            setState(() {
+                              switchValue = value;
+                            });
+                          },
+                        ),
+                        Icon(Icons.time_to_leave, color: Colors.green,),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: MaterialButton(
+                        color: Colors.blue,
+                        child: Text('Confirm destination'),
+                        onPressed: () {
+
+                        },
+                      ),
                     ),
                   ],
                 ),
