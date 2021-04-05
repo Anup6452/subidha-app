@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:subidha/custom/Notification.dart';
 import 'package:subidha/custom/divider.dart';
 
 class Maps extends StatefulWidget {
@@ -66,14 +67,50 @@ class _MapsState extends State<Maps> {
                       sourceName = name;
                       sourceLatLng = latLng;
                     });
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.green,
+                      content: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaleFactor: 1.0,
+                        ),
+                        child: Text('Source choosen, now choose other.',
+                            style: TextStyle(
+                              color: Colors.white,
+                            )),
+                      ),
+                    ));
                   } else if (destinationLatLng == null) {
                     setState(() {
                       destinationName = name;
                       destinationLatLng = latLng;
                     });
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      backgroundColor: Colors.green,
+                      content: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          textScaleFactor: 1.0,
+                        ),
+                        child: Text('Destination choosen, now choose other.',
+                            style: TextStyle(
+                              color: Colors.white,
+                            )),
+                      ),
+                    ));
                   }
                 } catch (e) {
                   print(e.toString());
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.red,
+                    content: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaleFactor: 1.0,
+                      ),
+                      child: Text('An error occurred. Try again.',
+                          style: TextStyle(
+                            color: Colors.white,
+                          )),
+                    ),
+                  ));
                 }
               }
             },
@@ -92,61 +129,94 @@ class _MapsState extends State<Maps> {
             left: 0.0,
             right: 0.0,
             bottom: 0.0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(18.0),
-                    topRight: Radius.circular(18.0)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 10.0,
-                    spreadRadius: 0.5,
-                    offset: Offset(0.7, 0.7),
-                  )
-                ],
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaleFactor: 1.0,
               ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 18.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 6.0),
-                    Text(
-                      "Hi There",
-                      style: TextStyle(color: Colors.black, fontSize: 12.0),
-                    ),
-                    Text(
-                      "Where To",
-                      style: TextStyle(color: Colors.black, fontSize: 16.0),
-                    ),
-                    TextButton.icon(
-                      onPressed: () {
-                        setupPositionLocator();
-                      },
-                      icon: Icon(Icons.location_on),
-                      label: Text('go to my location'),
-                    ),
-                    Dividerwidget(),
-                    ListTile(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.45,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(18.0),
+                      topRight: Radius.circular(18.0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black,
+                      blurRadius: 10.0,
+                      spreadRadius: 0.5,
+                      offset: Offset(0.7, 0.7),
+                    )
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0),
+                  child: ListView(
+                    children: [
+                      SizedBox(height: 6.0),
+                      Text(
+                        "Hi There",
+                        style: TextStyle(color: Colors.black, fontSize: 12.0),
+                      ),
+                      Text(
+                        "Where To (scroll for more option)",
+                        style: TextStyle(color: Colors.black, fontSize: 16.0),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          setupPositionLocator();
+                        },
+                        icon: Icon(Icons.location_on),
+                        label: Text('go to my location'),
+                      ),
+                      ListTile(
+                          leading: Icon(Icons.location_on, color: Colors.grey),
+                          title: Text(
+                            'Source',
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                          subtitle: Text(
+                            sourceLatLng == null
+                                ? 'Please select from map'
+                                : sourceName,
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          trailing: sourceLatLng == null
+                              ? SizedBox.shrink()
+                              : IconButton(
+                                  icon: Icon(
+                                    Icons.clear,
+                                    color: Colors.red,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      sourceLatLng = null;
+                                      sourceName = "";
+                                    });
+                                  },
+                                )),
+                      ListTile(
                         leading: Icon(Icons.location_on, color: Colors.grey),
                         title: Text(
-                          'Source',
+                          'Destination',
                           style: TextStyle(
                             color: Colors.black,
                           ),
                         ),
                         subtitle: Text(
-                          sourceLatLng == null
+                          destinationLatLng == null
                               ? 'Please select from map'
-                              : sourceName,
+                              : destinationName,
                           style: TextStyle(
                             color: Colors.grey,
                           ),
                         ),
-                        trailing: sourceLatLng == null
+                        trailing: destinationLatLng == null
                             ? SizedBox.shrink()
                             : IconButton(
                                 icon: Icon(
@@ -155,101 +225,84 @@ class _MapsState extends State<Maps> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    sourceLatLng = null;
-                                    sourceName = "";
+                                    destinationLatLng = null;
+                                    destinationName = "";
                                   });
                                 },
-                              )),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Dividerwidget(),
-                    SizedBox(
-                      height: 16.0,
-                    ),
-                    ListTile(
-                      leading: Icon(Icons.location_on, color: Colors.grey),
-                      title: Text(
-                        'Destination',
+                              ),
+                      ),
+                      Text(
+                        'Choose time:',
                         style: TextStyle(
                           color: Colors.black,
                         ),
                       ),
-                      subtitle: Text(
-                        destinationLatLng == null
-                            ? 'Please select from map'
-                            : destinationName,
-                        style: TextStyle(
-                          color: Colors.grey,
+                      TextButton(
+                        child: Text(
+                          selectedTime == null
+                              ? 'Click to choose time'
+                              : selectedTime.format(context) +
+                                  ' ( Click to Change time )',
+                          style: TextStyle(color: Colors.blue),
                         ),
-                      ),
-                      trailing: destinationLatLng == null
-                          ? SizedBox.shrink()
-                          : IconButton(
-                              icon: Icon(
-                                Icons.clear,
-                                color: Colors.red,
+                        onPressed: () async {
+                          selectedTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.now(),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor: Colors.green,
+                            content: MediaQuery(
+                              data: MediaQuery.of(context).copyWith(
+                                textScaleFactor: 1.0,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  destinationLatLng = null;
-                                  destinationName = "";
-                                });
-                              },
+                              child: Text('Date choosen, now choose other.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  )),
                             ),
-                    ),
-                    Text(
-                      'Choose time:',
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextButton(
-                      child: Text(
-                        selectedTime == null
-                            ? 'Click to choose time'
-                            : selectedTime.format(context) +
-                                ' ( Click to Change time )',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                      onPressed: () async {
-                        selectedTime = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        setState(() {});
-                      },
-                    ),
-                    Text('Choose ride:', style: TextStyle(color: Colors.black),),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.directions_bike, color: Colors.blue,),
-                        Switch(
-                          value: switchValue,
-                          inactiveThumbColor: Colors.blue,
-                          inactiveTrackColor: Colors.blue.withAlpha(150),
-                          activeColor: Colors.green,
-                          onChanged: (value) {
-                            setState(() {
-                              switchValue = value;
-                            });
-                          },
-                        ),
-                        Icon(Icons.time_to_leave, color: Colors.green,),
-                      ],
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: MaterialButton(
-                        color: Colors.blue,
-                        child: Text('Confirm destination'),
-                        onPressed: () {
-
+                          ));
+                          setState(() {});
                         },
                       ),
-                    ),
-                  ],
+                      Text(
+                        'Choose ride:',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.directions_bike,
+                            color: Colors.blue,
+                          ),
+                          Switch(
+                            value: switchValue,
+                            inactiveThumbColor: Colors.blue,
+                            inactiveTrackColor: Colors.blue.withAlpha(150),
+                            activeColor: Colors.green,
+                            onChanged: (value) {
+                              setState(() {
+                                switchValue = value;
+                              });
+                            },
+                          ),
+                          Icon(
+                            Icons.time_to_leave,
+                            color: Colors.green,
+                          ),
+                        ],
+                      ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: MaterialButton(
+                          color: Colors.blue,
+                          child: Text('Confirm destination'),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
