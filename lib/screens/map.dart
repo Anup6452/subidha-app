@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:subidha/custom/Notification.dart';
-import 'package:subidha/custom/divider.dart';
+import 'package:subidha/api.dart';
 
 class Maps extends StatefulWidget {
   @override
@@ -25,6 +25,11 @@ class _MapsState extends State<Maps> {
   String sourceName = "";
   String destinationName = "";
   TimeOfDay selectedTime;
+
+  Set<Marker> _markers = {};
+  Set<Polyline> _polyline = {};
+
+  List<LatLng> polylineLatLng = [];
 
   bool switchValue = false;
 
@@ -52,12 +57,15 @@ class _MapsState extends State<Maps> {
       body: Stack(
         children: [
           GoogleMap(
+            markers: _markers,
+            polylines: _polyline,
             padding: EdgeInsets.only(bottom: mapBottomPadding),
             initialCameraPosition: initialCameraPosition,
             mapType: MapType.normal,
             myLocationEnabled: true,
             zoomGesturesEnabled: true,
             zoomControlsEnabled: false,
+            myLocationButtonEnabled: false,
             onTap: (latLng) async {
               if (destinationLatLng == null || sourceLatLng == null) {
                 try {
@@ -66,6 +74,22 @@ class _MapsState extends State<Maps> {
                     setState(() {
                       sourceName = name;
                       sourceLatLng = latLng;
+                      _markers.add(Marker(
+                        markerId: MarkerId(sourceLatLng.toString()),
+                        position: sourceLatLng,
+                        infoWindow: InfoWindow(
+                          title: 'Source',
+                          snippet: 'This is your pickup point',
+                        ),
+                        icon: BitmapDescriptor.defaultMarker,
+                      ));
+                      polylineLatLng.add(sourceLatLng);
+                      _polyline.add(Polyline(
+                        polylineId: PolylineId(sourceLatLng.toString()),
+                        visible: true,
+                        points: polylineLatLng,
+                        color: Colors.blue,
+                      ));
                     });
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.green,
@@ -80,9 +104,25 @@ class _MapsState extends State<Maps> {
                       ),
                     ));
                   } else if (destinationLatLng == null) {
-                    setState(() {
+                    setState(() async {
                       destinationName = name;
                       destinationLatLng = latLng;
+                      _markers.add(Marker(
+                        markerId: MarkerId(destinationLatLng.toString()),
+                        position: destinationLatLng,
+                        infoWindow: InfoWindow(
+                          title: 'Destination',
+                          snippet: 'This is your destination',
+                        ),
+                        icon: BitmapDescriptor.defaultMarker,
+                      ));
+                      polylineLatLng.add(destinationLatLng);
+                      _polyline.add(Polyline(
+                        polylineId: PolylineId(destinationLatLng.toString()),
+                        visible: true,
+                        points: polylineLatLng,
+                        color: Colors.blue,
+                      ));
                     });
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       backgroundColor: Colors.green,
@@ -194,7 +234,12 @@ class _MapsState extends State<Maps> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
+                                    Marker marker = _markers.firstWhere((marker) => marker.markerId.value == sourceLatLng.toString(),orElse: () => null);
+                                    Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == sourceLatLng.toString(),orElse: () => null);
                                     setState(() {
+                                      _markers.remove(marker);
+                                      _polyline.remove(polyline);
+                                      polylineLatLng.remove(sourceLatLng);
                                       sourceLatLng = null;
                                       sourceName = "";
                                     });
@@ -224,7 +269,12 @@ class _MapsState extends State<Maps> {
                                   color: Colors.red,
                                 ),
                                 onPressed: () {
+                                  Marker marker = _markers.firstWhere((marker) => marker.markerId.value == destinationLatLng.toString(),orElse: () => null);
+                                  Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == destinationLatLng.toString(),orElse: () => null);
                                   setState(() {
+                                    _markers.remove(marker);
+                                    _polyline.remove(polyline);
+                                    polylineLatLng.remove(destinationLatLng);
                                     destinationLatLng = null;
                                     destinationName = "";
                                   });
