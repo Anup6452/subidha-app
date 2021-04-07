@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:subidha/api.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Maps extends StatefulWidget {
   @override
@@ -83,28 +83,16 @@ class _MapsState extends State<Maps> {
                         ),
                         icon: BitmapDescriptor.defaultMarker,
                       ));
-                      polylineLatLng.add(sourceLatLng);
-                      _polyline.add(Polyline(
-                        polylineId: PolylineId(sourceLatLng.toString()),
-                        visible: true,
-                        points: polylineLatLng,
-                        color: Colors.blue,
-                      ));
+//                      polylineLatLng.add(sourceLatLng);
+//                      _polyline.add(Polyline(
+//                        polylineId: PolylineId(sourceLatLng.toString()),
+//                        visible: true,
+//                        points: polylineLatLng,
+//                        color: Colors.blue,
+//                      ));
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      backgroundColor: Colors.green,
-                      content: MediaQuery(
-                        data: MediaQuery.of(context).copyWith(
-                          textScaleFactor: 1.0,
-                        ),
-                        child: Text('Source choosen, now choose other.',
-                            style: TextStyle(
-                              color: Colors.white,
-                            )),
-                      ),
-                    ));
                   } else if (destinationLatLng == null) {
-                    setState(() async {
+                    setState(() {
                       destinationName = name;
                       destinationLatLng = latLng;
                       _markers.add(Marker(
@@ -116,29 +104,17 @@ class _MapsState extends State<Maps> {
                         ),
                         icon: BitmapDescriptor.defaultMarker,
                       ));
-                      polylineLatLng.add(destinationLatLng);
-                      _polyline.add(Polyline(
-                        polylineId: PolylineId(destinationLatLng.toString()),
-                        visible: true,
-                        points: polylineLatLng,
-                        color: Colors.blue,
-                      ));
+//                      polylineLatLng.add(destinationLatLng);
+//                      _polyline.add(Polyline(
+//                        polylineId: PolylineId(destinationLatLng.toString()),
+//                        visible: true,
+//                        points: polylineLatLng,
+//                        color: Colors.blue,
+//                      ));
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      backgroundColor: Colors.green,
-                      content: MediaQuery(
-                        data: MediaQuery.of(context).copyWith(
-                          textScaleFactor: 1.0,
-                        ),
-                        child: Text('Destination choosen, now choose other.',
-                            style: TextStyle(
-                              color: Colors.white,
-                            )),
-                      ),
-                    ));
                   }
                 } catch (e) {
-                  print(e.toString());
+                  print('tapping error' + e.toString());
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: Colors.red,
                     content: MediaQuery(
@@ -190,8 +166,7 @@ class _MapsState extends State<Maps> {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: ListView(
                     children: [
                       SizedBox(height: 6.0),
@@ -234,11 +209,15 @@ class _MapsState extends State<Maps> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
-                                    Marker marker = _markers.firstWhere((marker) => marker.markerId.value == sourceLatLng.toString(),orElse: () => null);
-                                    Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == sourceLatLng.toString(),orElse: () => null);
+                                    Marker marker = _markers.firstWhere(
+                                        (marker) =>
+                                            marker.markerId.value ==
+                                            sourceLatLng.toString(),
+                                        orElse: () => null);
+//                                    Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == sourceLatLng.toString(),orElse: () => null);
                                     setState(() {
                                       _markers.remove(marker);
-                                      _polyline.remove(polyline);
+//                                      _polyline.remove(polyline);
                                       polylineLatLng.remove(sourceLatLng);
                                       sourceLatLng = null;
                                       sourceName = "";
@@ -269,11 +248,15 @@ class _MapsState extends State<Maps> {
                                   color: Colors.red,
                                 ),
                                 onPressed: () {
-                                  Marker marker = _markers.firstWhere((marker) => marker.markerId.value == destinationLatLng.toString(),orElse: () => null);
-                                  Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == destinationLatLng.toString(),orElse: () => null);
+                                  Marker marker = _markers.firstWhere(
+                                      (marker) =>
+                                          marker.markerId.value ==
+                                          destinationLatLng.toString(),
+                                      orElse: () => null);
+//                                  Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == destinationLatLng.toString(),orElse: () => null);
                                   setState(() {
                                     _markers.remove(marker);
-                                    _polyline.remove(polyline);
+//                                    _polyline.remove(polyline);
                                     polylineLatLng.remove(destinationLatLng);
                                     destinationLatLng = null;
                                     destinationName = "";
@@ -298,20 +281,9 @@ class _MapsState extends State<Maps> {
                         onPressed: () async {
                           selectedTime = await showTimePicker(
                             context: context,
-                            initialTime: TimeOfDay.now(),
+                            initialTime: TimeOfDay.fromDateTime(
+                                DateTime.now().add(Duration(minutes: 20))),
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            backgroundColor: Colors.green,
-                            content: MediaQuery(
-                              data: MediaQuery.of(context).copyWith(
-                                textScaleFactor: 1.0,
-                              ),
-                              child: Text('Date choosen, now choose other.',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  )),
-                            ),
-                          ));
                           setState(() {});
                         },
                       ),
@@ -347,9 +319,14 @@ class _MapsState extends State<Maps> {
                         alignment: Alignment.center,
                         child: MaterialButton(
                           color: Colors.blue,
-                          child: Text('Confirm destination'),
-                          onPressed: () {},
+                          child: Text('Confirm destination and calculate cost'),
+                          onPressed: () {
+                            calculate();
+                          },
                         ),
+                      ),
+                      SizedBox(
+                        height: 40.0,
                       ),
                     ],
                   ),
@@ -378,5 +355,139 @@ class _MapsState extends State<Maps> {
         "$name, $subLocality, $locality, $administrativeArea $postalCode, $country";
 
     return address;
+  }
+
+  calculate() {
+    if (sourceLatLng == null) {
+      showCustomSnackBar('Select source first');
+    } else if (destinationLatLng == null) {
+      showCustomSnackBar('Select destination first');
+    } else if (selectedTime == null) {
+      showCustomSnackBar('Select time first');
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => Theme(
+          data: ThemeData.light(),
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaleFactor: 1.0,
+            ),
+            child: AlertDialog(
+              title: Text('Confirmation'),
+              content: Container(
+                height: MediaQuery.of(context).size.height * 0.35,
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: ListView(
+                  children: [
+                    Text('Source:', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black,
+                    ),
+                    ),
+                    Text(sourceName, style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black45,
+                    ),
+                    ),
+                    Text('Destination:', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black,
+                    ),),
+                    Text('Destination: ' + destinationName, style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black45,
+                    ),),
+                    Text('Ride:', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black,
+                    ),),
+                    Text(switchValue ? 'Taxi' : 'Motorcycle', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black45,
+                    ),),
+                    Text('Time:', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black,
+                    ),),
+                    Text(selectedTime.format(context), style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black45,
+                    ),),
+                    Text('Price: ', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black,
+                    ),),
+                    Text('Rs. 60 per 15 minutes', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black45,
+                    ),),
+                    Text('After 45minutes Rs. 30 per 15 minutes', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black45,
+                    ),),
+                  ],
+
+                ),
+              ),
+              actions: [
+                TextButton.icon(
+                  icon: Icon(Icons.check, color: Colors.green,),
+                  label: Text('Book', style: TextStyle(color: Colors.green),),
+                  onPressed: () {
+                    bookRide();
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton.icon(
+                  icon: Icon(Icons.clear, color: Colors.red,),
+                  label: Text('Don\'t Book', style: TextStyle(color: Colors.red),),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  bookRide() async{
+    try{
+      FirebaseAuth auth = FirebaseAuth.instance;
+      FirebaseFirestore firebaseFireStore = FirebaseFirestore.instance;
+      firebaseFireStore.collection('booking').add({
+        'sourceLat': sourceLatLng.latitude.toString(),
+        'sourceLng': sourceLatLng.latitude.toString(),
+        'destinationLat': destinationLatLng.latitude.toString(),
+        'destinationLng': destinationLatLng.longitude.toString(),
+        'time_hour': selectedTime.hour,
+        'time_minute': selectedTime.minute,
+        'ride': switchValue,
+        'user_id': auth.currentUser.uid ?? "",
+        'user_name': auth.currentUser.displayName ?? "",
+        'user_email': auth.currentUser.email ?? "",
+        'profile_img': auth.currentUser.photoURL ?? "",
+      }).then((value) {
+        setState(() {
+          sourceLatLng = null;
+          sourceName = "";
+          destinationLatLng = null;
+          destinationName = "";
+          selectedTime = null;
+          switchValue = false;
+        });
+      }).catchError((error) {
+        print(error.toString());
+      });
+    }catch(e){
+      print(e.toString());
+    }
+  }
+
+  showCustomSnackBar(String errorText) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: Colors.red,
+      content: MediaQuery(
+        data: MediaQuery.of(context).copyWith(
+          textScaleFactor: 1.0,
+        ),
+        child: Text(errorText,
+            style: TextStyle(
+              color: Colors.white,
+            )),
+      ),
+    ));
   }
 }
