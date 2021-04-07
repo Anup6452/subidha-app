@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:subidha/app.dart';
 import 'package:subidha/screens/about.dart';
 import 'package:subidha/screens/payment.dart';
+import 'package:subidha/screens/profile.dart';
 import 'package:subidha/screens/ride_history.dart';
 import 'package:subidha/screens/terms_and_condition.dart';
 
@@ -54,6 +55,22 @@ class _WelcomePageState extends State<WelcomePage> {
                 ),
 
                 SizedBox(height: 10.0,),
+                ListTile(
+                  leading: Icon(Icons.history),
+                  title: new Text('Profile'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                            new ProfilePage()));
+                  },
+                ),
+                new Divider(
+                  color: Colors.white,
+                  height: 5.0,
+                ),
 
                 ListTile(
                   leading: Icon(Icons.card_giftcard),

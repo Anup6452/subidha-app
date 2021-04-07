@@ -104,7 +104,7 @@ class _MapsState extends State<Maps> {
                       ),
                     ));
                   } else if (destinationLatLng == null) {
-                    setState(() async {
+                    setState(()  {
                       destinationName = name;
                       destinationLatLng = latLng;
                       _markers.add(Marker(
