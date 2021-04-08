@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:subidha/custom/Notification.dart';
 
 import 'dart:math' show cos, sqrt, asin;
 
@@ -510,6 +511,8 @@ class _MapsState extends State<Maps> {
         'sourceLng': sourceLatLng.latitude.toString(),
         'destinationLat': destinationLatLng.latitude.toString(),
         'destinationLng': destinationLatLng.longitude.toString(),
+        'sourceName': sourceName,
+        'destinationName': destinationName,
         'time_hour': selectedTime.hour,
         'time_minute': selectedTime.minute,
         'ride': switchValue,
@@ -529,6 +532,11 @@ class _MapsState extends State<Maps> {
           selectedTime = null;
           switchValue = false;
         });
+        CustomNotification(
+          title: 'Successful',
+          color: Colors.green,
+          message: 'Successfully booked you can see bookings in side menu. The rider will contact you.',
+        ).show(context);
       }).catchError((error) {
         print(error.toString());
       });

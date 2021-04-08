@@ -74,7 +74,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
                 ListTile(
                   leading: Icon(Icons.card_giftcard),
-                  title: new Text('Payment'),
+                  title: new Text('My Bookings'),
                   onTap: () {
                     Navigator.of(context).pop();
                     Navigator.push(

@@ -10,7 +10,7 @@ class _PaymentPageState extends State <PaymentPage> {
     // TODO: implement build
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Payment Page'),
+        title: new Text('My Bookings'),
       ),
     );
   }
