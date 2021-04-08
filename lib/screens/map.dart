@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'dart:math' show cos, sqrt, asin;
+
+import 'package:subidha/reusable/text_form_field_1.dart';
 
 class Maps extends StatefulWidget {
   @override
@@ -20,11 +22,18 @@ class _MapsState extends State<Maps> {
   double mapBottomPadding = 0;
   double searchSheetWidget = (Platform.isIOS) ? 300 : 305;
 
+  FocusNode phoneNumberFocus;
+  TextEditingController phoneController;
+  final _formKey = GlobalKey<FormState>();
+
   LatLng sourceLatLng;
   LatLng destinationLatLng;
   String sourceName = "";
   String destinationName = "";
   TimeOfDay selectedTime;
+
+  final RegExp phoneNumberRegExp =
+  new RegExp(r"^(984|985|986|974|975|980|981|982|961|988|972|963)\d{7}$");
 
   Set<Marker> _markers = {};
   Set<Polyline> _polyline = {};
@@ -35,6 +44,20 @@ class _MapsState extends State<Maps> {
 
   var geoLocator = Geolocator();
   Position currentPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    phoneNumberFocus = FocusNode();
+    phoneController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    phoneNumberFocus.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
 
   void setupPositionLocator() async {
     Position position = await Geolocator.getCurrentPosition(
@@ -315,13 +338,39 @@ class _MapsState extends State<Maps> {
                           ),
                         ],
                       ),
+                      Form(
+                        key: _formKey,
+                        child: TextFormField1(
+                          focusNode: phoneNumberFocus,
+                          placeholder: 'Phone number',
+                          textEditingController: phoneController,
+                          showPhoneNumberPrefix: true,
+                          textInputType: TextInputType.numberWithOptions(
+                            decimal: false,
+                            signed: true,
+                          ),
+                          isPhoneNumber: true,
+                          validator: (value) {
+                            if (value == "")
+                              return "Phone number needed";
+                            else if (!phoneNumberRegExp.hasMatch(value))
+                              return "Enter valid phone number";
+                            return null;
+                          },
+                          onNext: () {
+
+                          },
+                        ),
+                      ),
                       Align(
                         alignment: Alignment.center,
                         child: MaterialButton(
                           color: Colors.blue,
                           child: Text('Confirm destination and calculate cost'),
                           onPressed: () {
-                            calculate();
+                            if(_formKey.currentState.validate()){
+                              calculate();
+                            }
                           },
                         ),
                       ),
@@ -406,13 +455,22 @@ class _MapsState extends State<Maps> {
                     Text(selectedTime.format(context), style: Theme.of(context).textTheme.bodyText1.copyWith(
                       color: Colors.black45,
                     ),),
+                    Text('Distance: ', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black,
+                    ),),
+                    Text(calculateDistance(sourceLatLng.latitude, sourceLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude), style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black45,
+                    ),),
                     Text('Price: ', style: Theme.of(context).textTheme.bodyText1.copyWith(
                       color: Colors.black,
                     ),),
-                    Text('Rs. 60 per 15 minutes', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                    Text('Price: ', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: Colors.black,
+                    ),),
+                    Text('Rs. 90 for first ride and price adds up by Rs. 30 per additional km (for bike).', style: Theme.of(context).textTheme.bodyText1.copyWith(
                       color: Colors.black45,
                     ),),
-                    Text('After 45minutes Rs. 30 per 15 minutes', style: Theme.of(context).textTheme.bodyText1.copyWith(
+                    Text('Rs. 160 for first ride and price adds up by Rs. 60 per additional km (for taxi).', style: Theme.of(context).textTheme.bodyText1.copyWith(
                       color: Colors.black45,
                     ),),
                   ],
@@ -459,7 +517,10 @@ class _MapsState extends State<Maps> {
         'user_name': auth.currentUser.displayName ?? "",
         'user_email': auth.currentUser.email ?? "",
         'profile_img': auth.currentUser.photoURL ?? "",
+        'phone_number': phoneController.value.text,
       }).then((value) {
+        phoneNumberFocus.unfocus();
+        phoneController.text = "";
         setState(() {
           sourceLatLng = null;
           sourceName = "";
@@ -489,5 +550,19 @@ class _MapsState extends State<Maps> {
             )),
       ),
     ));
+  }
+
+  String calculateDistance(lat1, lon1, lat2, lon2){
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 - c((lat2 - lat1) * p)/2 +
+        c(lat1 * p) * c(lat2 * p) *
+            (1 - c((lon2 - lon1) * p))/2;
+    var distance = 12742 * asin(sqrt(a));
+    if(distance < 1) {
+      return (distance * 1000).toStringAsFixed(1) + " m";
+    }else {
+      return distance.toStringAsFixed(1) + ' km';
+    }
   }
 }
