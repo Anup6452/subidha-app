@@ -408,6 +408,9 @@ class _MapsState extends State<Maps> {
   }
 
   calculate() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    print(auth.currentUser.photoURL);
+    return;
     if (sourceLatLng == null) {
       showCustomSnackBar('Select source first');
     } else if (destinationLatLng == null) {

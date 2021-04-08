@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:subidha/custom/Notification.dart';
 import 'package:subidha/custom/custom_button.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import 'main_screen.dart';
 
@@ -13,24 +17,27 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-
-  final TextEditingController _usernameController = TextEditingController();
-  TextEditingController _phoneNumberController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _nameController;
   final TextEditingController _cpasswordController = TextEditingController();
+
+  File _image;
+  final picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _nameController = TextEditingController();
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -92,10 +99,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
       helpText: 'Must be 18 years old',
     );
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-      });
   }
 
   SizedBox buildRegisterBtn(ThemeData theme) {
@@ -116,8 +119,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailRegularExpression = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+  final RegExp phoneNumberRegExp =
+  new RegExp(r"^(984|985|986|974|975|980|981|982|961|988|972|963)\d{7}$");
   final FirebaseAuth fbAuth = FirebaseAuth.instance;
-  DateTime selectedDate;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -146,12 +150,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(
                         height: 18.0,
                       ),
-
                       buildInputField(
-                        labelText: 'Username',
-                        controller: _usernameController,
-                        icon: Icons.person,
-                        hintText: 'Enter username',
+                        labelText: 'Name',
+                        controller: _nameController,
+                        icon: Icons.account_circle,
+                        hintText: 'Enter name',
                         isObscured: false,
                         theme: theme,
                         validation: (value) {
@@ -161,21 +164,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           return null;
                         },
                         isNumberOnly: false,
-                      ),
-                      buildInputField(
-                        labelText: 'Phone Number',
-                        controller: _phoneNumberController,
-                        icon: Icons.phone,
-                        hintText: 'Enter phone number',
-                        isObscured: false,
-                        theme: theme,
-                        validation: (value) {
-                          if (value.isEmpty) {
-                            return 'Field is required';
-                          }
-                          return null;
-                        },
-                        isNumberOnly: true,
                       ),
                       buildInputField(
                         labelText: 'Email Address',
@@ -195,22 +183,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                         isNumberOnly: false,
                       ),
-                      selectedDate != null
-                          ? Text(
-                        "${selectedDate.toLocal()}".split(' ')[0],
-//                              style: TextStyle(
-//                                  fontSize: 20,
-//                                  fontWeight: FontWeight.bold,
-//                                  height: 2.0,),
-                        style: Theme.of(context).textTheme.headline6,
-                      )
-                          : SizedBox.shrink(),
                       SizedBox(
                         height: 10.0,
-                      ),
-                      CustomButton(
-                        title: 'Date of Birth',
-                        onPressed: () {_selectDate(context);},
                       ),
                       buildInputField(
                         labelText: 'Password',
@@ -248,6 +222,19 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                         isNumberOnly: false,
                       ),
+                      TextButton(
+                        child: Text(_image == null ? 'Click to choose image' : 'Click to change image'),
+                        onPressed: () async {
+                          final pickedFile = await picker.getImage(source: ImageSource.gallery);
+                          setState(() {
+                            _image = File(pickedFile.path);
+                          });
+                        },
+                      ),
+                      _image == null ? SizedBox.shrink() : CircleAvatar(
+                        radius: 80.0,
+                        backgroundImage: FileImage(_image),
+                      ),
                       SizedBox(
                         height: 18.0,
                       ),
@@ -264,7 +251,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       RawMaterialButton(
                         child: Text('Login Here', style: TextStyle(color: Theme.of(context).accentColor,),),
                         onPressed: (){
-                          Navigator.pushNamedAndRemoveUntil(context, MainScreen.idScreen, (route) => false);                        },
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                            builder: (context) => MainScreen(),
+                          ), (route) => false);                        },
                       ),
                     ],
                   ),
@@ -278,39 +267,61 @@ class _RegisterPageState extends State<RegisterPage> {
   }
   register() async {
     if (_formKey.currentState.validate()) {
-      String email = _emailController.text.trim();
-      String password = _passwordController.text.trim();
-      try {
-        await fbAuth.createUserWithEmailAndPassword(
-            email: email, password: password);
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => MainScreen()));
+      if(_image == null) {
         CustomNotification(
-          title: 'Registration',
-          message:
-          'Successfully registered now you can sign in.',
-          color: Colors.green,
+          title: 'Error',
+          color: Colors.red,
+          message: 'Select profile photo first.',
         ).show(context);
-        _emailController.text = '';
-        _passwordController.text = '';
-      } catch (e) {
-        if (e.code == 'network-request-failed') {
+      }
+      else {
+        String email = _emailController.text.trim();
+        String password = _passwordController.text.trim();
+        try {
+          var user = await fbAuth.createUserWithEmailAndPassword(
+            email: email, password: password,);
+          FirebaseStorage _storage = FirebaseStorage.instance;
+          var reference = _storage.ref().child("images/");
+          var uploadTask = await reference.putFile(_image);
+          user.user.updateProfile(
+            displayName: _nameController.value.text,
+            photoURL: await uploadTask.ref.getDownloadURL(),
+          );
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => MainScreen()));
           CustomNotification(
-            title: 'Network Error',
+            title: 'Registration',
             message:
-            'No Network Connection. Check your connection and try again.',
-            color: Theme
-                .of(context)
-                .errorColor,
+            'Successfully registered now you can sign in.',
+            color: Colors.green,
           ).show(context);
-        } else {
-          CustomNotification(
-            title: 'Registration Error',
-            message: e.code.toString() + 'An error occurred!',
-            color: Theme
-                .of(context)
-                .errorColor,
-          ).show(context);
+          setState(() {
+            _emailController.text = '';
+            _passwordController.text = '';
+            _nameController.text = '';
+            _image = null;
+            _passwordController = null;
+            _cpasswordController.text = null;
+          });
+        } catch (e) {
+          if (e.code == 'network-request-failed') {
+            CustomNotification(
+              title: 'Network Error',
+              message:
+              'No Network Connection. Check your connection and try again.',
+              color: Theme
+                  .of(context)
+                  .errorColor,
+            ).show(context);
+          } else {
+            CustomNotification(
+              title: 'Registration Error',
+              message: e.code.toString() + 'An error occurred!',
+              color: Theme
+                  .of(context)
+                  .errorColor,
+            ).show(context);
+          }
         }
       }
     }

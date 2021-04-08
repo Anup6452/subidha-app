@@ -25,6 +25,7 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
 
+    FirebaseAuth fbAuth = FirebaseAuth.instance;
 
     return new Scaffold(
       key: scaffoldKey,
@@ -35,7 +36,7 @@ class _WelcomePageState extends State<WelcomePage> {
           child: ListView(
               children: <Widget>[
                 Container(
-                  height: 220,
+                  height: 300.0,
                   child: DrawerHeader(
                     child: Column(
                       children: <Widget>[
@@ -44,9 +45,12 @@ class _WelcomePageState extends State<WelcomePage> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text('User',),
+                          CircleAvatar(
+                            radius: 40.0,
+                            backgroundImage: NetworkImage(fbAuth.currentUser.photoURL),
+                          ),
                           SizedBox(height: 10.0,),
-                          Text('View Profile',),
+                          Text(fbAuth.currentUser.displayName,),
                         ],
                       )
                       ]
