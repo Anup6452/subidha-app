@@ -1,21 +1,3 @@
-import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
-class ProfilePage extends StatefulWidget {
-  @override
-  _ProfilePageState createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  bool _status = true;
-  final FocusNode myFocusNode = FocusNode();
-  TextEditingController nameController = TextEditingController();
-
-  FirebaseAuth fbAuth = FirebaseAuth.instance;
 
   final picker = ImagePicker();
   File newImage;
@@ -29,8 +11,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    var user = fbAuth.currentUser;
-    var image = NetworkImage(user.photoURL);
+    FirebaseAuth fbAuth = FirebaseAuth.instance;
+
     return new Scaffold(
         body: new Container(
           color: Colors.white,
@@ -52,17 +34,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                new Container(
-                                    width: 140.0,
-                                    height: 140.0,
-                                    decoration: new BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: new DecorationImage(
-                                        image: new ExactAssetImage(
-                                            'assets/2.png'),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    )),
+                                CircleAvatar(
+                                  radius: 70.0,
+                                  backgroundImage: NetworkImage(fbAuth.currentUser.photoURL),
+                                ),
                               ],
                             ),
 

@@ -12,6 +12,8 @@ import 'dart:math' show cos, sqrt, asin;
 
 import 'package:subidha/reusable/text_form_field_1.dart';
 
+import 'package:subidha/helpers/networkhelper.dart';
+
 class Maps extends StatefulWidget {
   @override
   _MapsState createState() => _MapsState();
@@ -23,15 +25,25 @@ class _MapsState extends State<Maps> {
   double mapBottomPadding = 0;
   double searchSheetWidget = (Platform.isIOS) ? 300 : 305;
 
+
+
   FocusNode phoneNumberFocus;
   TextEditingController phoneController;
   final _formKey = GlobalKey<FormState>();
+
+
+  final List<LatLng> polyPoints = []; // For holding Co-ordinates as LatLng
+  final Set<Polyline> polyLines = {}; // For holding instance of Polyline
+  final Set<Marker> markers = {}; // For holding instance of Marker
+  var data;
 
   LatLng sourceLatLng;
   LatLng destinationLatLng;
   String sourceName = "";
   String destinationName = "";
   TimeOfDay selectedTime;
+
+
 
   final RegExp phoneNumberRegExp =
   new RegExp(r"^(984|985|986|974|975|980|981|982|961|988|972|963)\d{7}$");
@@ -51,6 +63,7 @@ class _MapsState extends State<Maps> {
     super.initState();
     phoneNumberFocus = FocusNode();
     phoneController = TextEditingController();
+    getJsonData();
   }
 
   @override
@@ -74,6 +87,51 @@ class _MapsState extends State<Maps> {
     target: LatLng(27.69329, 85.32227),
     zoom: 10.0,
   );
+
+
+  void getJsonData() async {
+    // Create an instance of Class NetworkHelper which uses http package
+    // for requesting data to the server and receiving response as JSON format
+
+    NetworkHelper network = NetworkHelper(
+      startLat: sourceLatLng.latitude,
+      startLng: sourceLatLng.longitude,
+      endLat: destinationLatLng.latitude,
+      endLng: destinationLatLng.longitude,
+    );
+
+    try {
+      // getData() returns a json Decoded data
+      data = await network.getData();
+
+      // We can reach to our desired JSON data manually as following
+      LineString ls =
+      LineString(data['features'][0]['geometry']['coordinates']);
+
+      for (int i = 0; i < ls.lineString.length; i++) {
+        polyPoints.add(LatLng(ls.lineString[i][1], ls.lineString[i][0]));
+      }
+
+      if (polyPoints.length == ls.lineString.length) {
+        setPolyLines();
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+
+  setPolyLines() {
+    Polyline polyline = Polyline(
+      polylineId: PolylineId("polyline"),
+      color: Colors.lightBlue,
+      points: polyPoints,
+    );
+    polyLines.add(polyline);
+    setState(() {});
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -511,7 +569,7 @@ class _MapsState extends State<Maps> {
       FirebaseFirestore firebaseFireStore = FirebaseFirestore.instance;
       firebaseFireStore.collection('booking').add({
         'sourceLat': sourceLatLng.latitude.toString(),
-        'sourceLng': sourceLatLng.latitude.toString(),
+        'sourceLng': sourceLatLng.longitude.toString(),
         'destinationLat': destinationLatLng.latitude.toString(),
         'destinationLng': destinationLatLng.longitude.toString(),
         'sourceName': sourceName,
@@ -576,4 +634,11 @@ class _MapsState extends State<Maps> {
       return distance.toStringAsFixed(1) + ' km';
     }
   }
+}
+
+//Create a new class to hold the Co-ordinates we've received from the response data
+
+class LineString {
+  LineString(this.lineString);
+  List<dynamic> lineString;
 }
