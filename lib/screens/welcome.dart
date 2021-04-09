@@ -45,6 +45,7 @@ class _WelcomePageState extends State<WelcomePage> {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+
                           CircleAvatar(
                             radius: 40.0,
                             backgroundImage: NetworkImage(fbAuth.currentUser.photoURL),
