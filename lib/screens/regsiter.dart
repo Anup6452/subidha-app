@@ -281,7 +281,7 @@ class _RegisterPageState extends State<RegisterPage> {
           var user = await fbAuth.createUserWithEmailAndPassword(
             email: email, password: password,);
           FirebaseStorage _storage = FirebaseStorage.instance;
-          var reference = _storage.ref().child("images/");
+          var reference = _storage.ref().child("images/" + user.user.uid + ".jpg");
           var uploadTask = await reference.putFile(_image);
           user.user.updateProfile(
             displayName: _nameController.value.text,
