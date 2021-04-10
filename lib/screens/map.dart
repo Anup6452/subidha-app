@@ -25,12 +25,9 @@ class _MapsState extends State<Maps> {
   double mapBottomPadding = 0;
   double searchSheetWidget = (Platform.isIOS) ? 300 : 305;
 
-
-
   FocusNode phoneNumberFocus;
   TextEditingController phoneController;
   final _formKey = GlobalKey<FormState>();
-
 
   final List<LatLng> polyPoints = []; // For holding Co-ordinates as LatLng
   final Set<Polyline> polyLines = {}; // For holding instance of Polyline
@@ -43,10 +40,8 @@ class _MapsState extends State<Maps> {
   String destinationName = "";
   TimeOfDay selectedTime;
 
-
-
   final RegExp phoneNumberRegExp =
-  new RegExp(r"^(984|985|986|974|975|980|981|982|961|988|972|963)\d{7}$");
+      new RegExp(r"^(984|985|986|974|975|980|981|982|961|988|972|963)\d{7}$");
 
   Set<Marker> _markers = {};
   Set<Polyline> _polyline = {};
@@ -88,7 +83,6 @@ class _MapsState extends State<Maps> {
     zoom: 10.0,
   );
 
-
   void getJsonData() async {
     // Create an instance of Class NetworkHelper which uses http package
     // for requesting data to the server and receiving response as JSON format
@@ -106,7 +100,7 @@ class _MapsState extends State<Maps> {
 
       // We can reach to our desired JSON data manually as following
       LineString ls =
-      LineString(data['features'][0]['geometry']['coordinates']);
+          LineString(data['features'][0]['geometry']['coordinates']);
 
       for (int i = 0; i < ls.lineString.length; i++) {
         polyPoints.add(LatLng(ls.lineString[i][1], ls.lineString[i][0]));
@@ -120,7 +114,6 @@ class _MapsState extends State<Maps> {
     }
   }
 
-
   setPolyLines() {
     Polyline polyline = Polyline(
       polylineId: PolylineId("polyline"),
@@ -130,8 +123,6 @@ class _MapsState extends State<Maps> {
     polyLines.add(polyline);
     setState(() {});
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -416,9 +407,7 @@ class _MapsState extends State<Maps> {
                               return "Enter valid phone number";
                             return null;
                           },
-                          onNext: () {
-
-                          },
+                          onNext: () {},
                         ),
                       ),
                       Align(
@@ -427,7 +416,7 @@ class _MapsState extends State<Maps> {
                           color: Colors.blue,
                           child: Text('Confirm destination and calculate cost'),
                           onPressed: () {
-                            if(_formKey.currentState.validate()){
+                            if (_formKey.currentState.validate()) {
                               calculate();
                             }
                           },
@@ -466,9 +455,6 @@ class _MapsState extends State<Maps> {
   }
 
   calculate() {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    print(auth.currentUser.photoURL);
-    return;
     if (sourceLatLng == null) {
       showCustomSnackBar('Select source first');
     } else if (destinationLatLng == null) {
@@ -491,66 +477,121 @@ class _MapsState extends State<Maps> {
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: ListView(
                   children: [
-                    Text('Source:', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
+                    Text(
+                      'Source:',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
                     ),
+                    Text(
+                      sourceName,
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black45,
+                          ),
                     ),
-                    Text(sourceName, style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black45,
+                    Text(
+                      'Destination:',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
                     ),
+                    Text(
+                      'Destination: ' + destinationName,
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black45,
+                          ),
                     ),
-                    Text('Destination:', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
-                    ),),
-                    Text('Destination: ' + destinationName, style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black45,
-                    ),),
-                    Text('Ride:', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
-                    ),),
-                    Text(switchValue ? 'Taxi' : 'Motorcycle', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black45,
-                    ),),
-                    Text('Time:', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
-                    ),),
-                    Text(selectedTime.format(context), style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black45,
-                    ),),
-                    Text('Distance: ', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
-                    ),),
-                    Text(calculateDistance(sourceLatLng.latitude, sourceLatLng.longitude, destinationLatLng.latitude, destinationLatLng.longitude), style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black45,
-                    ),),
-                    Text('Price: ', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
-                    ),),
-                    Text('Price: ', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black,
-                    ),),
-                    Text('Rs. 90 for first ride and price adds up by Rs. 30 per additional km (for bike).', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black45,
-                    ),),
-                    Text('Rs. 160 for first ride and price adds up by Rs. 60 per additional km (for taxi).', style: Theme.of(context).textTheme.bodyText1.copyWith(
-                      color: Colors.black45,
-                    ),),
+                    Text(
+                      'Ride:',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      switchValue ? 'Taxi' : 'Motorcycle',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black45,
+                          ),
+                    ),
+                    Text(
+                      'Time:',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      selectedTime.format(context),
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black45,
+                          ),
+                    ),
+                    Text(
+                      'Distance: ',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      calculateDistance(
+                          sourceLatLng.latitude,
+                          sourceLatLng.longitude,
+                          destinationLatLng.latitude,
+                          destinationLatLng.longitude),
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black45,
+                          ),
+                    ),
+                    Text(
+                      'Price: ',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      'Price: ',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black,
+                          ),
+                    ),
+                    Text(
+                      'Rs. 90 for first ride and price adds up by Rs. 30 per additional km (for bike).',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black45,
+                          ),
+                    ),
+                    Text(
+                      'Rs. 160 for first ride and price adds up by Rs. 60 per additional km (for taxi).',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                            color: Colors.black45,
+                          ),
+                    ),
                   ],
-
                 ),
               ),
               actions: [
                 TextButton.icon(
-                  icon: Icon(Icons.check, color: Colors.green,),
-                  label: Text('Book', style: TextStyle(color: Colors.green),),
+                  icon: Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  ),
+                  label: Text(
+                    'Book',
+                    style: TextStyle(color: Colors.green),
+                  ),
                   onPressed: () {
                     bookRide();
                     Navigator.pop(context);
                   },
                 ),
                 TextButton.icon(
-                  icon: Icon(Icons.clear, color: Colors.red,),
-                  label: Text('Don\'t Book', style: TextStyle(color: Colors.red),),
+                  icon: Icon(
+                    Icons.clear,
+                    color: Colors.red,
+                  ),
+                  label: Text(
+                    'Don\'t Book',
+                    style: TextStyle(color: Colors.red),
+                  ),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -563,8 +604,8 @@ class _MapsState extends State<Maps> {
     }
   }
 
-  bookRide() async{
-    try{
+  bookRide() async {
+    try {
       FirebaseAuth auth = FirebaseAuth.instance;
       FirebaseFirestore firebaseFireStore = FirebaseFirestore.instance;
       firebaseFireStore.collection('booking').add({
@@ -592,16 +633,18 @@ class _MapsState extends State<Maps> {
           destinationName = "";
           selectedTime = null;
           switchValue = false;
+          markers.clear();
         });
         CustomNotification(
           title: 'Successful',
           color: Colors.green,
-          message: 'Successfully booked you can see bookings in side menu. The rider will contact you.',
+          message:
+              'Successfully booked you can see bookings in side menu. The rider will contact you.',
         ).show(context);
       }).catchError((error) {
         print(error.toString());
       });
-    }catch(e){
+    } catch (e) {
       print(e.toString());
     }
   }
@@ -621,16 +664,16 @@ class _MapsState extends State<Maps> {
     ));
   }
 
-  String calculateDistance(lat1, lon1, lat2, lon2){
+  String calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
-    var a = 0.5 - c((lat2 - lat1) * p)/2 +
-        c(lat1 * p) * c(lat2 * p) *
-            (1 - c((lon2 - lon1) * p))/2;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     var distance = 12742 * asin(sqrt(a));
-    if(distance < 1) {
+    if (distance < 1) {
       return (distance * 1000).toStringAsFixed(1) + " m";
-    }else {
+    } else {
       return distance.toStringAsFixed(1) + ' km';
     }
   }
