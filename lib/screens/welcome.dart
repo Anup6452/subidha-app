@@ -19,12 +19,10 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
-
   GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-
     FirebaseAuth fbAuth = FirebaseAuth.instance;
 
     return new Scaffold(
@@ -33,151 +31,122 @@ class _WelcomePageState extends State<WelcomePage> {
         width: 250,
         color: Colors.white,
         child: Drawer(
-          child: ListView(
-              children: <Widget>[
-                Container(
-                  height: 300.0,
-                  child: DrawerHeader(
-                    child: Column(
-                      children: <Widget>[
-                      Image.asset('assets/2.png', height: 130, width: 130,),
-                      SizedBox(width: 5.0,),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-
-                          CircleAvatar(
-                            radius: 40.0,
-                            backgroundImage: NetworkImage(fbAuth.currentUser.photoURL),
-                          ),
-                          SizedBox(height: 10.0,),
-                          Text(fbAuth.currentUser.displayName,),
-                        ],
-                      )
-                      ]
-                    )
-                )
-                ),
-
-                SizedBox(height: 10.0,),
-                ListTile(
-                  leading: Icon(Icons.history),
-                  title: new Text('Profile'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                            new ProfilePage()));
-                  },
-                ),
-                new Divider(
-                  color: Colors.white,
-                  height: 5.0,
-                ),
-
-                ListTile(
-                  leading: Icon(Icons.card_giftcard),
-                  title: new Text('My Bookings'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) => new PaymentPage()));
-                  },
-                ),
-                new Divider(
-                  color: Colors.white,
-                  height: 5.0,
-                ),
-                ListTile(
-                  leading: Icon(Icons.history),
-                  title: new Text('View ride history'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
+          child: ListView(children: <Widget>[
+            SizedBox(
+              height: 10.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.history),
+              title: new Text('Profile'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) => new ProfilePage()));
+              },
+            ),
+            new Divider(
+              color: Colors.white,
+              height: 5.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.card_giftcard),
+              title: new Text('My Bookings'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) => new PaymentPage()));
+              },
+            ),
+            new Divider(
+              color: Colors.white,
+              height: 5.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.history),
+              title: new Text('View ride history'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) =>
                             new RideHistoryPage()));
-                  },
-                ),
-                new Divider(
-                  color: Colors.white,
-                  height: 5.0,
-                ),
-                ListTile(
-                  leading: Icon(Icons.contact_support),
-                  title: new Text('Contact Support'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
+              },
+            ),
+            new Divider(
+              color: Colors.white,
+              height: 5.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.contact_support),
+              title: new Text('Contact Support'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) =>
                             new ContactsupportPage()));
-                  },
-                ),
-                new Divider(
-                  color: Colors.white,
-                  height: 5.0,
-                ),
-                ListTile(
-                  leading: Icon(Icons.branding_watermark_sharp),
-                  title: new Text('Terms and condition'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) =>
+              },
+            ),
+            new Divider(
+              color: Colors.white,
+              height: 5.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.branding_watermark_sharp),
+              title: new Text('Terms and condition'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) =>
                             new TermsandconditionPage()));
-                  },
-                ),
-                new Divider(
-                  color: Colors.white,
-                  height: 5.0,
-                ),
-                ListTile(
-                  leading: Icon(Icons.info),
-                  title: new Text('About Page'),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (BuildContext context) => new AboutPage()));
-                  },
-                ),
-                new Divider(
-                  color: Colors.white,
-                  height: 5.0,
-                ),
-                ListTile(
-                  leading: Icon(Icons.logout),
-                  title: new Text('Logout'),
-                  onTap: () async {
-                    await FirebaseAuth.instance.signOut().then((value) =>    Navigator.of(context).pushReplacement(
+              },
+            ),
+            new Divider(
+              color: Colors.white,
+              height: 5.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.info),
+              title: new Text('About Page'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) => new AboutPage()));
+              },
+            ),
+            new Divider(
+              color: Colors.white,
+              height: 5.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: new Text('Logout'),
+              onTap: () async {
+                await FirebaseAuth.instance.signOut().then((value) =>
+                    Navigator.of(context).pushReplacement(
                         MaterialPageRoute(builder: (context) => App())));
-
-                  },
-                ),
-                new Divider(
-                  color: Colors.white,
-                  height: 5.0,
-                ),
-
-              ]
-          ),
+              },
+            ),
+            new Divider(
+              color: Colors.white,
+              height: 5.0,
+            ),
+          ]),
         ),
       ),
-
       body: Stack(
         children: [
           Maps(),
-
           Positioned(
             top: 45.0,
             left: 22.0,
@@ -193,13 +162,16 @@ class _WelcomePageState extends State<WelcomePage> {
                     BoxShadow(
                       color: Colors.black,
                       blurRadius: 5.0,
-                      offset: Offset(0.7,0.7),
+                      offset: Offset(0.7, 0.7),
                     ),
                   ],
                 ),
                 child: CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.menu, color: Colors.black,),
+                  child: Icon(
+                    Icons.menu,
+                    color: Colors.black,
+                  ),
                   radius: 20.0,
                 ),
               ),
@@ -210,5 +182,3 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 }
-
-

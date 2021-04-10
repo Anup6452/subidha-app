@@ -51,10 +51,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            CircleAvatar(
-                              radius: 70.0,
-                              backgroundImage:
-                                  NetworkImage(fbAuth.currentUser.photoURL),
+                            Image(
+                              image: AssetImage('assets/2.png'),
                             ),
                           ],
                         ),
