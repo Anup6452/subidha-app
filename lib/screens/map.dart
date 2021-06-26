@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+//import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -18,7 +19,6 @@ class Maps extends StatefulWidget {
   @override
   _MapsState createState() => _MapsState();
 }
-
 class _MapsState extends State<Maps> {
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController mapController;
@@ -123,7 +123,6 @@ class _MapsState extends State<Maps> {
     polyLines.add(polyline);
     setState(() {});
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

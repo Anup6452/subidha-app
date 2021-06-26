@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:subidha/custom/Notification.dart';
-import 'package:subidha/custom/custom_button.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:subidha/custom/custom_button.dart';
 
 import 'main_screen.dart';
 
@@ -99,6 +100,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
       helpText: 'Must be 18 years old',
     );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
   }
 
   SizedBox buildRegisterBtn(ThemeData theme) {
@@ -121,7 +126,9 @@ class _RegisterPageState extends State<RegisterPage> {
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
   final RegExp phoneNumberRegExp =
   new RegExp(r"^(984|985|986|974|975|980|981|982|961|988|972|963)\d{7}$");
+  bool switchValue = false;
   final FirebaseAuth fbAuth = FirebaseAuth.instance;
+  DateTime selectedDate;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -186,6 +193,24 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(
                         height: 10.0,
                       ),
+                      selectedDate != null
+                          ? Text(
+                        "${selectedDate.toLocal()}".split(' ')[0],
+//                              style: TextStyle(
+//                                  fontSize: 20,
+//                                  fontWeight: FontWeight.bold,
+//                                  height: 2.0,),
+                        style: Theme.of(context).textTheme.headline6,
+                      )
+                          : SizedBox.shrink(),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      CustomButton(
+                        title: 'Date of Birth',
+                        onPressed: () {_selectDate(context);}, padded: null,
+                      ),
+
                       buildInputField(
                         labelText: 'Password',
                         controller: _passwordController,
