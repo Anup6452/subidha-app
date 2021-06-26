@@ -23,7 +23,7 @@ class _AboutPageState extends State<AboutPage> {
         title: new Text('About Page'),
       ),
       body: new Container(
-        padding: const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 16.0),
+        padding: const EdgeInsets.fromLTRB(16.0, 45.0, 16.0, 140.0),
 
         child: Container(
           //width: 320.0,
@@ -31,9 +31,13 @@ class _AboutPageState extends State<AboutPage> {
           padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 16.0),
           child: Column(
             children: [
-              Text('What is Subidha', style: TextStyle(fontWeight: FontWeight.bold),),
+              Text('What is Subidha?', style: TextStyle(fontWeight: FontWeight.bold),),
               SizedBox(height: 18.0,),
-              Text('Subidha is an application like a tootle and pathao fo rthe use of public')
+              Text('Subidha is an mobile application like a tootle and pathao for the use of public in kathmandu valley.'),
+              SizedBox(height: 30.0,),
+              Text('What Subhida Does?', style: TextStyle(fontWeight: FontWeight.bold),),
+              SizedBox(height: 18.0,),
+              Text('Subhida offers mobility solutions by providing economical ride-sharing along with a wide rangeof vehicles across bikes and cars.')
             ],
           ),
         ),
