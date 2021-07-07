@@ -8,6 +8,7 @@ import 'package:subidha/custom/Notification.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:subidha/custom/custom_button.dart';
+import 'package:subidha/screens/terms_and_condition.dart';
 
 import 'main_screen.dart';
 
@@ -273,6 +274,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         textAlign: TextAlign.center,
                       ),
                       //buildRegisterBtn(theme),
+
+                      RawMaterialButton(
+                        child: Text('I agree the terms and condition', style: TextStyle(color: Theme.of(context).accentColor,),),
+                        onPressed: (){
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
+                            builder: (context) => TermsandconditionPage(),
+                          ), (route) => false);                        },
+                      ),
                       RawMaterialButton(
                         child: Text('Login Here', style: TextStyle(color: Theme.of(context).accentColor,),),
                         onPressed: (){

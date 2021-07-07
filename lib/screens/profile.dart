@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:subidha/screens/forget_password.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -79,7 +80,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: <Widget>[
                                   new Text(
-                                    'Parsonal Information',
+                                    'Personal Information',
                                     style: TextStyle(
                                         fontSize: 18.0,
                                         color: Colors.black,
@@ -202,7 +203,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                       color: Colors.blue,
                                     ),
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ForgotpasswordPage()));
+                                  },
                                 )
                               : SizedBox.shrink(),
                         ),

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:subidha/app.dart';
 import 'package:subidha/screens/about.dart';
+import 'package:subidha/screens/booking.dart';
 import 'package:subidha/screens/payment.dart';
 import 'package:subidha/screens/profile.dart';
 import 'package:subidha/screens/ride_history.dart';
@@ -58,7 +59,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 Navigator.push(
                     context,
                     new MaterialPageRoute(
-                        builder: (BuildContext context) => new PaymentPage()));
+                        builder: (BuildContext context) => new BookingPage()));
               },
             ),
             new Divider(
@@ -75,6 +76,22 @@ class _WelcomePageState extends State<WelcomePage> {
                     new MaterialPageRoute(
                         builder: (BuildContext context) =>
                             new RideHistoryPage()));
+              },
+            ),
+            new Divider(
+              color: Colors.white,
+              height: 5.0,
+            ),
+            ListTile(
+              leading: Icon(Icons.history),
+              title: new Text('Payment'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                        new PaymentPage()));
               },
             ),
             new Divider(
