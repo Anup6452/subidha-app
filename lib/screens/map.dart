@@ -19,6 +19,7 @@ class Maps extends StatefulWidget {
   @override
   _MapsState createState() => _MapsState();
 }
+
 class _MapsState extends State<Maps> {
   Completer<GoogleMapController> _controllerGoogleMap = Completer();
   GoogleMapController mapController;
@@ -123,6 +124,7 @@ class _MapsState extends State<Maps> {
     polyLines.add(polyline);
     setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -622,6 +624,9 @@ class _MapsState extends State<Maps> {
         'user_email': auth.currentUser.email ?? "",
         'profile_img': auth.currentUser.photoURL ?? "",
         'phone_number': phoneController.value.text,
+        'isRiderFound': false,
+        'hasMeet': false,
+        'isCompleted': false,
       }).then((value) {
         phoneNumberFocus.unfocus();
         phoneController.text = "";

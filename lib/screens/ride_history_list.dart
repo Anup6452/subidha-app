@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:subidha/custom/source_destination_view.dart';
+import 'package:subidha/custom/ride_history_listtile.dart';
 
-class MyBookingList extends StatefulWidget {
+class RideHistoryList extends StatefulWidget {
   @override
-  _MyBookingListState createState() => _MyBookingListState();
+  _RideHistoryListState createState() => _RideHistoryListState();
 }
 
-class _MyBookingListState extends State<MyBookingList> {
+class _RideHistoryListState extends State<RideHistoryList> {
   final FirebaseAuth fbAuth = FirebaseAuth.instance;
 
   @override
@@ -16,7 +16,7 @@ class _MyBookingListState extends State<MyBookingList> {
     Query bookingCollection = FirebaseFirestore.instance
         .collection('booking')
         .where('user_id', isEqualTo: fbAuth.currentUser.uid)
-        .where('isCompleted', isEqualTo: false);
+        .where('isCompleted', isEqualTo: true);
     return Container(
       child: FutureBuilder(
         future: bookingCollection.get(),
@@ -38,18 +38,9 @@ class _MyBookingListState extends State<MyBookingList> {
                 children:
                     List.generate(bookingSnapshot.data.docs.length, (index) {
                   var dataWithDetails = bookingSnapshot.data.docs[index];
-                  return SourceDestinationView(
-                    isRiderFound: dataWithDetails['isCompleted'],
+                  return RideHistoryListTile(
                     sourceName: dataWithDetails['sourceName'],
                     destinationName: dataWithDetails['destinationName'],
-                    cancleFunction: () async {
-                      await FirebaseFirestore.instance
-                          .runTransaction((transaction) async {
-                        transaction
-                            .delete(bookingSnapshot.data.docs[index].reference);
-                      });
-                      setState(() {});
-                    },
                   );
                 }),
               );
