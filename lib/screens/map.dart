@@ -627,6 +627,7 @@ class _MapsState extends State<Maps> {
         'isRiderFound': false,
         'hasMeet': false,
         'isCompleted': false,
+	'rider_id': '',
       }).then((value) {
         phoneNumberFocus.unfocus();
         phoneController.text = "";

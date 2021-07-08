@@ -31,7 +31,7 @@ class _RideHistoryListState extends State<RideHistoryList> {
             } else {
               if (bookingSnapshot.data.docs.length == 0) {
                 return Center(
-                  child: Text('No Bookings'),
+                  child: Text('No Ride History'),
                 );
               }
               return new ListView(
