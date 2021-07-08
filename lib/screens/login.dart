@@ -127,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16.0, kToolbarHeight, 16.0, 16.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 15.0, 16.0, 16.0),
           children: <Widget>[
             Align(
               child: SizedBox(
@@ -138,11 +138,19 @@ class _LoginPageState extends State<LoginPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       buildTitle(theme),
+                      Text(
+                        'Hello People,',
+                        style: Theme.of(context).textTheme.caption,
+                      ),
+                      SizedBox(height: 10.0,),
+                      Text(
+                        'Welcome to SUBHIDA!',
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
                       SizedBox(height: 15.0,),
                       Text(
                         'SIGN IN YOUR ACCOUNT',
-                        style: Theme.of(context).textTheme.bodyText2,
-                      ),
+                        style: Theme.of(context).textTheme.subtitle2,                      ),
                       //buildText('Sign up with your email address',12.0,  theme ),
                       buildInputField(
                         labelText: 'Email Address',
@@ -191,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ForgotpasswordPage()));
                         },
                       ),
-                      SizedBox(height: 40.0,),
+                      SizedBox(height: 20.0,),
                       Text(
                         'No Account?',
                         style: Theme.of(context).textTheme.caption,

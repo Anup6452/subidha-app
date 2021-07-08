@@ -63,6 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Padding buildInputField(
       {String labelText,
         String hintText,
+        String helperText,
         bool isObscured,
         ThemeData theme,
         IconData icon,
@@ -76,6 +77,7 @@ class _RegisterPageState extends State<RegisterPage> {
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
+          helperText: helperText,
           icon: new Icon(icon ?? Icons.person),
           hintStyle: TextStyle(color: theme.primaryColorDark),
         ),
@@ -137,7 +139,7 @@ class _RegisterPageState extends State<RegisterPage> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16.0, kToolbarHeight, 16.0, 16.0),
+          padding: const EdgeInsets.fromLTRB(16.0, 30.0, 16.0, 16.0),
           children: <Widget>[
             Align(
               child: SizedBox(
@@ -148,16 +150,25 @@ class _RegisterPageState extends State<RegisterPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       buildTitle(theme),
+                      Text(
+                        'Hello people,',
+                        style: Theme.of(context).textTheme.caption,
+                      ),
                       SizedBox(
-                        height: 18.0,
+                        height: 10.0,
                       ),
                       Text(
-                        'REGISTER YOUR ACCOUNT',
-                        style: Theme.of(context).textTheme.bodyText2,
+                        'Welcome to SUBHIDA!',
+                        style: Theme.of(context).textTheme.subtitle2,
                       ),
                       SizedBox(
-                        height: 18.0,
+                        height: 10.0,
                       ),
+                      Text(
+                        'REGISTER NOW',
+                        style: Theme.of(context).textTheme.subtitle2,
+                      ),
+
                       buildInputField(
                         labelText: 'Name',
                         controller: _nameController,
@@ -178,6 +189,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         controller: _emailController,
                         icon: Icons.email,
                         hintText: 'Enter email',
+                        helperText: 'eg. email@email.com',
                         isObscured: false,
                         theme: theme,
                         validation: (value) {
@@ -191,9 +203,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                         isNumberOnly: false,
                       ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
+                      //SizedBox(
+                      //  height: 5.0,
+                    //  ),
                       selectedDate != null
                           ? Text(
                         "${selectedDate.toLocal()}".split(' ')[0],
@@ -204,19 +216,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         style: Theme.of(context).textTheme.headline6,
                       )
                           : SizedBox.shrink(),
-                      SizedBox(
-                        height: 10.0,
-                      ),
                       CustomButton(
                         title: 'Date of Birth',
                         onPressed: () {_selectDate(context);}, padded: null,
                       ),
-
                       buildInputField(
                         labelText: 'Password',
                         controller: _passwordController,
                         icon: Icons.vpn_key,
                         hintText: 'Enter password',
+                        helperText: '8 or more characters',
                         isObscured: true,
                         theme: theme,
                         validation: (value) {
@@ -266,7 +275,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       buildRegisterBtn(theme),
                       SizedBox(
-                        height: 18.0,
+                        height: 10.0,
                       ),
                       Text(
                         'Already have Account',
