@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../custom/Notification.dart';
 
 class ContactsupportPage extends StatefulWidget {
   static const String idScreen = "Contact Us";
@@ -10,9 +13,10 @@ class ContactsupportPage extends StatefulWidget {
 
 class _ContactsupportPageState extends State<ContactsupportPage> {
   TextEditingController _emailController = TextEditingController();
-  TextEditingController _nameController;
+  TextEditingController _nameController = TextEditingController();
   TextEditingController _phoneNumberController = TextEditingController();
   TextEditingController _messageController = TextEditingController();
+
 
   @override
   void initState() {
@@ -86,7 +90,7 @@ class _ContactsupportPageState extends State<ContactsupportPage> {
       width: 250.0,
       child: RaisedButton(
         onPressed: () {
-
+          submit();
         },
         padding: const EdgeInsets.symmetric(vertical: 12.0),
         color: theme.buttonColor,
@@ -262,5 +266,31 @@ class _ContactsupportPageState extends State<ContactsupportPage> {
         ),
       ),
     );
+  }
+
+  submit() async{
+    try {
+      FirebaseFirestore firebaseFireStore = FirebaseFirestore.instance;
+      firebaseFireStore.collection('Support').add({
+        'Name': _nameController.value.text,
+        'Email': _emailController.value.text,
+        'Message': _messageController.value.text,
+        'Phone': _phoneNumberController.value.text,
+      }).then((value) {
+        _nameController.text = "";
+        _emailController.text = "";
+        _messageController.text = "";
+        _phoneNumberController.text = "";
+      });
+      CustomNotification(
+        title: 'Successful',
+        color: Colors.green,
+        message:
+        'Successfully Submitted',
+      ).show(context);
+    } catch (e) {
+      print(e.toString());
+    }
+
   }
 }
