@@ -113,7 +113,7 @@ class _ContactsupportPageState extends State<ContactsupportPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('CONTACT US'),
+        title: Text('CONTACT US', textAlign: TextAlign.center),
       ),
       body: Form(
         key: _formKey,

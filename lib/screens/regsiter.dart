@@ -23,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _nameController;
   final TextEditingController _cpasswordController = TextEditingController();
+  bool _checkbox = false;
 
   File _image;
   final picker = ImagePicker();
@@ -62,14 +63,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Padding buildInputField(
       {String labelText,
-        String hintText,
-        String helperText,
-        bool isObscured,
-        ThemeData theme,
-        IconData icon,
-        Function validation,
-        TextEditingController controller,
-        bool isNumberOnly}) {
+      String hintText,
+      String helperText,
+      bool isObscured,
+      ThemeData theme,
+      IconData icon,
+      Function validation,
+      TextEditingController controller,
+      bool isNumberOnly}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: TextFormField(
@@ -85,8 +86,8 @@ class _RegisterPageState extends State<RegisterPage> {
         keyboardType: isNumberOnly ? TextInputType.number : TextInputType.text,
         inputFormatters: isNumberOnly
             ? [
-          WhitelistingTextInputFormatter.digitsOnly,
-        ]
+                WhitelistingTextInputFormatter.digitsOnly,
+              ]
             : [],
         validator: validation,
       ),
@@ -114,7 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
       width: 250.0,
       child: RaisedButton(
         onPressed: () {
-          register();
+          _checkbox ? register() : null;
         },
         padding: const EdgeInsets.symmetric(vertical: 12.0),
         color: theme.buttonColor,
@@ -128,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailRegularExpression = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
   final RegExp phoneNumberRegExp =
-  new RegExp(r"^(984|985|986|974|975|980|981|982|961|988|972|963)\d{7}$");
+      new RegExp(r"^(984|985|986|974|975|980|981|982|961|988|972|963)\d{7}$");
   bool switchValue = false;
   final FirebaseAuth fbAuth = FirebaseAuth.instance;
   DateTime selectedDate;
@@ -205,20 +206,23 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       //SizedBox(
                       //  height: 5.0,
-                    //  ),
+                      //  ),
                       selectedDate != null
                           ? Text(
-                        "${selectedDate.toLocal()}".split(' ')[0],
+                              "${selectedDate.toLocal()}".split(' ')[0],
 //                              style: TextStyle(
 //                                  fontSize: 20,
 //                                  fontWeight: FontWeight.bold,
 //                                  height: 2.0,),
-                        style: Theme.of(context).textTheme.headline6,
-                      )
+                              style: Theme.of(context).textTheme.headline6,
+                            )
                           : SizedBox.shrink(),
                       CustomButton(
                         title: 'Date of Birth',
-                        onPressed: () {_selectDate(context);}, padded: null,
+                        onPressed: () {
+                          _selectDate(context);
+                        },
+                        padded: null,
                       ),
                       buildInputField(
                         labelText: 'Password',
@@ -231,8 +235,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         validation: (value) {
                           if (value.isEmpty) {
                             return 'Field is required';
-                          }
-                          else if (value.length < 8) {
+                          } else if (value.length < 8) {
                             return '8 or More character';
                           }
                           return null;
@@ -249,8 +252,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         validation: (value) {
                           if (value.isEmpty) {
                             return 'Field is required';
-                          }
-                          else if (value != _passwordController.text) {
+                          } else if (value != _passwordController.text) {
                             return 'Enter same password';
                           }
                           return null;
@@ -258,21 +260,62 @@ class _RegisterPageState extends State<RegisterPage> {
                         isNumberOnly: false,
                       ),
                       TextButton(
-                        child: Text(_image == null ? 'Click to choose image' : 'Click to change image'),
+                        child: Text(_image == null
+                            ? 'Click to choose image'
+                            : 'Click to change image'),
                         onPressed: () async {
-                          final pickedFile = await picker.getImage(source: ImageSource.gallery);
+                          final pickedFile = await picker.getImage(
+                              source: ImageSource.gallery);
                           setState(() {
                             _image = File(pickedFile.path);
                           });
                         },
                       ),
-                      _image == null ? SizedBox.shrink() : CircleAvatar(
-                        radius: 80.0,
-                        backgroundImage: FileImage(_image),
-                      ),
+                      _image == null
+                          ? SizedBox.shrink()
+                          : CircleAvatar(
+                              radius: 80.0,
+                              backgroundImage: FileImage(_image),
+                            ),
                       SizedBox(
-                        height: 18.0,
+                        height: 15.0,
                       ),
+                      Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Checkbox(
+                                  value: _checkbox,
+                                  onChanged: (bool newValue) {
+                                    setState(
+                                      () {
+                                        _checkbox = newValue;
+                                      },
+                                    );
+                                  }),
+                              SizedBox(width: 10),
+                              RawMaterialButton(
+                                child: Text(
+                                  'Terms and Conditions',
+                                  style: TextStyle(
+                                      color: Theme.of(context).accentColor),
+                                ),
+                                onPressed: () {
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            TermsandconditionPage(),
+                                      ),
+                                      (route) => false);
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
                       buildRegisterBtn(theme),
                       SizedBox(
                         height: 10.0,
@@ -285,18 +328,20 @@ class _RegisterPageState extends State<RegisterPage> {
                       //buildRegisterBtn(theme),
 
                       RawMaterialButton(
-                        child: Text('I agree the terms and condition', style: TextStyle(color: Theme.of(context).accentColor,),),
-                        onPressed: (){
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                            builder: (context) => TermsandconditionPage(),
-                          ), (route) => false);                        },
-                      ),
-                      RawMaterialButton(
-                        child: Text('Login Here', style: TextStyle(color: Theme.of(context).accentColor,),),
-                        onPressed: (){
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                            builder: (context) => MainScreen(),
-                          ), (route) => false);                        },
+                        child: Text(
+                          'Login Here',
+                          style: TextStyle(
+                            color: Theme.of(context).accentColor,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MainScreen(),
+                              ),
+                              (route) => false);
+                        },
                       ),
                     ],
                   ),
@@ -308,23 +353,26 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
   register() async {
     if (_formKey.currentState.validate()) {
-      if(_image == null) {
+      if (_image == null) {
         CustomNotification(
           title: 'Error',
           color: Colors.red,
           message: 'Select profile photo first.',
         ).show(context);
-      }
-      else {
+      } else {
         String email = _emailController.text.trim();
         String password = _passwordController.text.trim();
         try {
           var user = await fbAuth.createUserWithEmailAndPassword(
-            email: email, password: password,);
+            email: email,
+            password: password,
+          );
           FirebaseStorage _storage = FirebaseStorage.instance;
-          var reference = _storage.ref().child("images/" + user.user.uid + ".jpg");
+          var reference =
+              _storage.ref().child("images/" + user.user.uid + ".jpg");
           var uploadTask = await reference.putFile(_image);
           user.user.updateProfile(
             displayName: _nameController.value.text,
@@ -334,8 +382,7 @@ class _RegisterPageState extends State<RegisterPage> {
               MaterialPageRoute(builder: (context) => MainScreen()));
           CustomNotification(
             title: 'Registration',
-            message:
-            'Successfully registered now you can sign in.',
+            message: 'Successfully registered now you can sign in.',
             color: Colors.green,
           ).show(context);
           setState(() {
@@ -351,18 +398,14 @@ class _RegisterPageState extends State<RegisterPage> {
             CustomNotification(
               title: 'Network Error',
               message:
-              'No Network Connection. Check your connection and try again.',
-              color: Theme
-                  .of(context)
-                  .errorColor,
+                  'No Network Connection. Check your connection and try again.',
+              color: Theme.of(context).errorColor,
             ).show(context);
           } else {
             CustomNotification(
               title: 'Registration Error',
               message: e.code.toString() + 'An error occurred!',
-              color: Theme
-                  .of(context)
-                  .errorColor,
+              color: Theme.of(context).errorColor,
             ).show(context);
           }
         }
@@ -370,4 +413,3 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 }
-
