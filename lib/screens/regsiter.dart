@@ -9,7 +9,6 @@ import 'package:subidha/custom/Notification.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:subidha/custom/custom_button.dart';
 import 'package:subidha/screens/terms_and_condition.dart';
-import 'package:subidha/screens/verify.dart';
 
 import 'main_screen.dart';
 
@@ -380,7 +379,7 @@ class _RegisterPageState extends State<RegisterPage> {
             photoURL: await uploadTask.ref.getDownloadURL(),
           );
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => VerifyScreen()));
+              MaterialPageRoute(builder: (context) => MainScreen()));
           CustomNotification(
             title: 'Registration',
             message: 'Successfully registered now you can sign in.',
