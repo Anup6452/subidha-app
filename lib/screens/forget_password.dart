@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:subidha/custom/Notification.dart';
+import 'package:subidha/screens/login.dart';
 import 'package:subidha/screens/welcome.dart';
 
 
@@ -9,7 +12,8 @@ class ForgotpasswordPage extends StatefulWidget {
 class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
   @override
   final TextEditingController _emailController = TextEditingController();
-
+  bool pass = false;
+  final _auth = FirebaseAuth.instance;
   Container buildTitle(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.only(bottom: 8.0),
@@ -59,13 +63,49 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
     return SizedBox(
       width: 250.0,
       child: RaisedButton(
-        onPressed: () {
+        onPressed: () async{
           if (_formKey.currentState.validate()) {
+            String email = _emailController.text.trim();
             print(_emailController.text);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => WelcomePage()),
-            );
+            try {
+              await _auth.sendPasswordResetEmail(email: email);
+              if(email != null){
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
+                CustomNotification(
+                  title: 'Password Reset',
+                  message: 'Please check yor email',
+                  color: Colors.green,
+                ).show(context);
+              }
+              _emailController.text = '';
+            } catch (e) {
+              if (e.code == 'network-request-failed') {
+                CustomNotification(
+                  title: 'Network Error',
+                  message:
+                  'No Network Connection. Check your connection and try again.',
+                  color: Theme.of(context).errorColor,
+                ).show(context);
+              } else if(e.code == 'user-not-found'){
+                CustomNotification(
+                  title: 'Error',
+                  message: '$email is not Registered.',
+                  color: Theme.of(context).errorColor,
+                ).show(context);
+              }else if (e.code == 'user-disabled') {
+                CustomNotification(
+                  title: 'Error',
+                  message: 'Your Account is disabled.',
+                  color: Theme.of(context).errorColor,
+                ).show(context);
+              }else {
+                CustomNotification(
+                  title: 'Sign In Error',
+                  message: e.code.toString() + 'An error occurred!',
+                  color: Theme.of(context).errorColor,
+                ).show(context);
+              }
+            }
           }
         },
         padding: const EdgeInsets.symmetric(vertical: 12.0),
