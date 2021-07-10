@@ -36,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: new ListView(
         children: <Widget>[
           AppBar(
-            title: Text('Profile'),
+            title: Text('Edit Profile'),
           ),
           Column(
             children: <Widget>[
@@ -68,6 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: new Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
+
                     children: <Widget>[
                       Padding(
                           padding: EdgeInsets.all(25.0),

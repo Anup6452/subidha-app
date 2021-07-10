@@ -7,6 +7,7 @@ class ForgotpasswordPage extends StatefulWidget {
   _ForgotpasswordPageState createState() => new _ForgotpasswordPageState();
 }
 class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
+  @override
   final TextEditingController _emailController = TextEditingController();
 
   Container buildTitle(ThemeData theme) {
@@ -82,7 +83,9 @@ class _ForgotpasswordPageState extends State<ForgotpasswordPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: new AppBar(title: new Text('Forgot Password?')),
+      appBar: new AppBar(
+          title: new Text('Forgot Password?'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
