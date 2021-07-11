@@ -58,7 +58,7 @@ class _PaymentPageState extends State<PaymentPage> {
     KhaltiProduct product = KhaltiProduct(
         id: 'Test',
         name: 'Pay for Ride',
-        amount: 1000
+        amount: 1000.00,
     );
     _flutterKhalti.startPayment(
         product: product,
