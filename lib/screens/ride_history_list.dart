@@ -41,6 +41,7 @@ class _RideHistoryListState extends State<RideHistoryList> {
                   return RideHistoryListTile(
                     sourceName: dataWithDetails['sourceName'],
                     destinationName: dataWithDetails['destinationName'],
+                    phone_number: dataWithDetails['phone_number'],
                   );
                 }),
               );

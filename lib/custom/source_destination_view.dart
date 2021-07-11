@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class SourceDestinationView extends StatelessWidget {
   final String sourceName;
   final String destinationName;
+  final String phone_number;
   final bool isRiderFound;
   final Function cancleFunction;
 
@@ -10,6 +11,7 @@ class SourceDestinationView extends StatelessWidget {
     @required this.sourceName,
     @required this.destinationName,
     @required this.isRiderFound,
+    @required this.phone_number,
     @required this.cancleFunction,
   });
 
@@ -56,6 +58,25 @@ class SourceDestinationView extends StatelessWidget {
             ),
             title: Text(
               destinationName,
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          ListTile(
+            dense: true,
+            leading: Container(
+              width: MediaQuery.of(context).size.width * 0.25,
+              child: Text(
+                'Phone Number',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            title: Text(
+            phone_number,
               style: TextStyle(
                 color: Colors.black,
               ),

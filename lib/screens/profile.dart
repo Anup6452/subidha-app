@@ -205,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => PasswordchangePage()));
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => PasswordchangePage()));
                                   },
                                 )
                               : SizedBox.shrink(),

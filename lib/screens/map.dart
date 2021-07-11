@@ -542,12 +542,7 @@ class _MapsState extends State<Maps> {
                             color: Colors.black45,
                           ),
                     ),
-                    Text(
-                      'Price: ',
-                      style: Theme.of(context).textTheme.bodyText1.copyWith(
-                            color: Colors.black,
-                          ),
-                    ),
+
                     Text(
                       'Price: ',
                       style: Theme.of(context).textTheme.bodyText1.copyWith(

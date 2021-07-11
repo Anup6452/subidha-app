@@ -42,6 +42,7 @@ class _MyBookingListState extends State<MyBookingList> {
                     isRiderFound: dataWithDetails['isCompleted'],
                     sourceName: dataWithDetails['sourceName'],
                     destinationName: dataWithDetails['destinationName'],
+                    phone_number: dataWithDetails['phone_number'],
                     cancleFunction: () async {
                       await FirebaseFirestore.instance
                           .runTransaction((transaction) async {

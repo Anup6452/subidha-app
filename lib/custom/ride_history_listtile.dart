@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class RideHistoryListTile extends StatelessWidget {
   final String sourceName;
   final String destinationName;
+  final String phone_number;
 
   RideHistoryListTile({
     @required this.sourceName,
     @required this.destinationName,
+    @required this.phone_number,
   });
 
   @override
@@ -52,6 +54,25 @@ class RideHistoryListTile extends StatelessWidget {
             ),
             title: Text(
               destinationName,
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          ListTile(
+            dense: true,
+            leading: Container(
+              width: MediaQuery.of(context).size.width * 0.25,
+              child: Text(
+                'Phone_number',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            title: Text(
+              phone_number,
               style: TextStyle(
                 color: Colors.black,
               ),
