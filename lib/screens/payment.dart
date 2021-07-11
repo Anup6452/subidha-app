@@ -9,7 +9,6 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  @override
   Container buildTitle(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.only(bottom: 8.0),
