@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.subidha">
    <application
         android:label="subidha"
+       tools:replace = "android:label"
         android:icon="@mipmap/ic_launcher">
        <meta-data android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyD3JFsM_DyC6b6bQci8Bmk3PHg-3mmG-jo"/>
