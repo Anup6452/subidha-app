@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:subidha/screens/forget_password.dart';
+import 'package:subidha/screens/passwordchange.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -205,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                   ),
                                   onPressed: () {
-                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ForgotpasswordPage()));
+                                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => PasswordchangePage()));
                                   },
                                 )
                               : SizedBox.shrink(),

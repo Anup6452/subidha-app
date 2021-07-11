@@ -303,13 +303,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                       color: Theme.of(context).accentColor),
                                 ),
                                 onPressed: () {
-                                  Navigator.pushAndRemoveUntil(
+                                  Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             TermsandconditionPage(),
                                       ),
-                                      (route) => false);
+                                     // (route) => false
+                                  );
                                 },
                               ),
                             ],
