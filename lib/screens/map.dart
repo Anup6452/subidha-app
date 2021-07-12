@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:io';
 //import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:subidha/api.dart';
 import 'package:subidha/custom/Notification.dart';
 
 import 'dart:math' show cos, sqrt, asin;
@@ -84,10 +86,10 @@ class _MapsState extends State<Maps> {
     zoom: 10.0,
   );
 
-  void getJsonData() async {
-    // Create an instance of Class NetworkHelper which uses http package
-    // for requesting data to the server and receiving response as JSON format
+  PolylinePoints polylinePoints = PolylinePoints();
+  List<LatLng> polylineCoordinates = [];
 
+  void getJsonData() async {
     NetworkHelper network = NetworkHelper(
       startLat: sourceLatLng.latitude,
       startLng: sourceLatLng.longitude,
@@ -157,13 +159,6 @@ class _MapsState extends State<Maps> {
                         ),
                         icon: BitmapDescriptor.defaultMarker,
                       ));
-//                      polylineLatLng.add(sourceLatLng);
-//                      _polyline.add(Polyline(
-//                        polylineId: PolylineId(sourceLatLng.toString()),
-//                        visible: true,
-//                        points: polylineLatLng,
-//                        color: Colors.blue,
-//                      ));
                     });
                   } else if (destinationLatLng == null) {
                     setState(() {
@@ -178,13 +173,6 @@ class _MapsState extends State<Maps> {
                         ),
                         icon: BitmapDescriptor.defaultMarker,
                       ));
-//                      polylineLatLng.add(destinationLatLng);
-//                      _polyline.add(Polyline(
-//                        polylineId: PolylineId(destinationLatLng.toString()),
-//                        visible: true,
-//                        points: polylineLatLng,
-//                        color: Colors.blue,
-//                      ));
                     });
                   }
                 } catch (e) {
@@ -288,10 +276,11 @@ class _MapsState extends State<Maps> {
                                             marker.markerId.value ==
                                             sourceLatLng.toString(),
                                         orElse: () => null);
-//                                    Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == sourceLatLng.toString(),orElse: () => null);
+                                   Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == sourceLatLng.toString(),orElse: () => null);
                                     setState(() {
                                       _markers.remove(marker);
-//                                      _polyline.remove(polyline);
+                                      polylineCoordinates.clear();
+                                     _polyline.clear();
                                       polylineLatLng.remove(sourceLatLng);
                                       sourceLatLng = null;
                                       sourceName = "";
@@ -327,16 +316,44 @@ class _MapsState extends State<Maps> {
                                           marker.markerId.value ==
                                           destinationLatLng.toString(),
                                       orElse: () => null);
-//                                  Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == destinationLatLng.toString(),orElse: () => null);
+                                 // Polyline polyline = _polyline.firstWhere((marker) => marker.polylineId.value == destinationLatLng.toString(),orElse: () => null);
                                   setState(() {
                                     _markers.remove(marker);
-//                                    _polyline.remove(polyline);
+                                   _polyline.clear();
+                                    polylineCoordinates.clear();
                                     polylineLatLng.remove(destinationLatLng);
                                     destinationLatLng = null;
                                     destinationName = "";
                                   });
                                 },
                               ),
+                      ),
+                      MaterialButton(
+                        child: Text('View direction',style: TextStyle(color: Colors.black,),),
+                        onPressed: () async {
+                          if(sourceLatLng == null || destinationLatLng == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('Select both source and destination first', style: TextStyle(color: Colors.white),),
+                              backgroundColor: Colors.red,
+                            ));
+                            return;
+                          }
+                          PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+                            kDirectionApi,
+                            PointLatLng(sourceLatLng.latitude, sourceLatLng.longitude),
+                              PointLatLng(destinationLatLng.latitude, destinationLatLng.longitude)
+                          );
+                          for (PointLatLng point in result.points) {
+                            polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+                          }
+                          setState(() {
+                            Polyline polyline = Polyline(
+                                polylineId: PolylineId("poly"),
+                                color: Color.fromARGB(255, 40, 122, 198),
+                                points: polylineCoordinates);
+                            _polyline.add(polyline);
+                          });
+                        },
                       ),
                       Text(
                         'Choose time:',

@@ -1,17 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class SourceDestinationView extends StatelessWidget {
-  final String sourceName;
-  final String destinationName;
-  final String phone_number;
-  final bool isRiderFound;
+  final DocumentSnapshot dataWithDetails;
+  // final String sourceName;
+  // final String destinationName;
+  // final String phone_number;
+  // final bool isRiderFound;
   final Function cancleFunction;
 
   SourceDestinationView({
-    @required this.sourceName,
-    @required this.destinationName,
-    @required this.isRiderFound,
-    @required this.phone_number,
+    @required this.dataWithDetails,
+    // @required this.sourceName,
+    // @required this.destinationName,
+    // @required this.isRiderFound,
+    // @required this.phone_number,
     @required this.cancleFunction,
   });
 
@@ -38,7 +41,7 @@ class SourceDestinationView extends StatelessWidget {
               ),
             ),
             title: Text(
-              sourceName,
+              dataWithDetails['sourceName'],
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -57,7 +60,7 @@ class SourceDestinationView extends StatelessWidget {
               ),
             ),
             title: Text(
-              destinationName,
+              dataWithDetails['destinationName'],
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -76,7 +79,7 @@ class SourceDestinationView extends StatelessWidget {
               ),
             ),
             title: Text(
-            phone_number,
+              dataWithDetails['phone_number'],
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -86,15 +89,15 @@ class SourceDestinationView extends StatelessWidget {
             margin: EdgeInsets.symmetric(vertical: 10.0),
             alignment: Alignment.center,
             child: Text(
-              isRiderFound ? 'Rider found' : 'Pending',
+              dataWithDetails['isRiderFound'] ? 'Rider found' : dataWithDetails['hasMeet'] ? 'has meet' : dataWithDetails['isCompleted'] ? 'completed' : 'Pending',
               style: TextStyle(
-                color: isRiderFound ? Colors.green : Colors.blue,
+                color: dataWithDetails['isCompleted'] ? Colors.green : Colors.blue,
               ),
             ),
           ),
           MaterialButton(
             color: Colors.red,
-            child: Text('Cancle Booking'),
+            child: Text('Cancel Booking'),
             onPressed: () {
               cancleFunction.call();
             },

@@ -35,24 +35,34 @@ class _MyBookingListState extends State<MyBookingList> {
                 );
               }
               return new ListView(
-                children:
+                children: <Widget>[
+                      TextButton.icon(
+                        icon: Icon(Icons.refresh, color: Colors.white),
+                        label: Text(
+                          'Refresh',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {});
+                        },
+                      ),
+                    ] +
                     List.generate(bookingSnapshot.data.docs.length, (index) {
-                  var dataWithDetails = bookingSnapshot.data.docs[index];
-                  return SourceDestinationView(
-                    isRiderFound: dataWithDetails['isCompleted'],
-                    sourceName: dataWithDetails['sourceName'],
-                    destinationName: dataWithDetails['destinationName'],
-                    phone_number: dataWithDetails['phone_number'],
-                    cancleFunction: () async {
-                      await FirebaseFirestore.instance
-                          .runTransaction((transaction) async {
-                        transaction
-                            .delete(bookingSnapshot.data.docs[index].reference);
-                      });
-                      setState(() {});
-                    },
-                  );
-                }),
+                      var dataWithDetails = bookingSnapshot.data.docs[index];
+                      return SourceDestinationView(
+                        dataWithDetails: dataWithDetails,
+                        cancleFunction: () async {
+                          await FirebaseFirestore.instance
+                              .runTransaction((transaction) async {
+                            transaction.delete(
+                                bookingSnapshot.data.docs[index].reference);
+                          });
+                          setState(() {});
+                        },
+                      );
+                    }),
               );
             }
           }
