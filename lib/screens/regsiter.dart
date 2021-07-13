@@ -381,7 +381,7 @@ class _RegisterPageState extends State<RegisterPage> {
             photoURL: await uploadTask.ref.getDownloadURL(),
           );
           Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => VerifyScreen()));
+              MaterialPageRoute(builder: (context) => MainScreen()));
           CustomNotification(
             title: 'Registration',
             message: 'Successfully registered now you can sign in.',

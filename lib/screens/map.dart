@@ -31,7 +31,7 @@ class _MapsState extends State<Maps> {
   FocusNode phoneNumberFocus;
   TextEditingController phoneController;
   final _formKey = GlobalKey<FormState>();
-
+  String _placeDistance;
   final List<LatLng> polyPoints = []; // For holding Co-ordinates as LatLng
   final Set<Polyline> polyLines = {}; // For holding instance of Polyline
   final Set<Marker> markers = {}; // For holding instance of Marker
@@ -61,7 +61,6 @@ class _MapsState extends State<Maps> {
     super.initState();
     phoneNumberFocus = FocusNode();
     phoneController = TextEditingController();
-    getJsonData();
   }
 
   @override
@@ -89,43 +88,7 @@ class _MapsState extends State<Maps> {
   PolylinePoints polylinePoints = PolylinePoints();
   List<LatLng> polylineCoordinates = [];
 
-  void getJsonData() async {
-    NetworkHelper network = NetworkHelper(
-      startLat: sourceLatLng.latitude,
-      startLng: sourceLatLng.longitude,
-      endLat: destinationLatLng.latitude,
-      endLng: destinationLatLng.longitude,
-    );
 
-    try {
-      // getData() returns a json Decoded data
-      data = await network.getData();
-
-      // We can reach to our desired JSON data manually as following
-      LineString ls =
-          LineString(data['features'][0]['geometry']['coordinates']);
-
-      for (int i = 0; i < ls.lineString.length; i++) {
-        polyPoints.add(LatLng(ls.lineString[i][1], ls.lineString[i][0]));
-      }
-
-      if (polyPoints.length == ls.lineString.length) {
-        setPolyLines();
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  setPolyLines() {
-    Polyline polyline = Polyline(
-      polylineId: PolylineId("polyline"),
-      color: Colors.lightBlue,
-      points: polyPoints,
-    );
-    polyLines.add(polyline);
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -331,6 +294,7 @@ class _MapsState extends State<Maps> {
                       MaterialButton(
                         child: Text('View direction',style: TextStyle(color: Colors.black,),),
                         onPressed: () async {
+                          double totalDistance = 0.0;
                           if(sourceLatLng == null || destinationLatLng == null) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Select both source and destination first', style: TextStyle(color: Colors.white),),
@@ -346,12 +310,22 @@ class _MapsState extends State<Maps> {
                           for (PointLatLng point in result.points) {
                             polylineCoordinates.add(LatLng(point.latitude, point.longitude));
                           }
+                          for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+                            totalDistance += _coordinateDistance(
+                              polylineCoordinates[i].latitude,
+                              polylineCoordinates[i].longitude,
+                              polylineCoordinates[i + 1].latitude,
+                              polylineCoordinates[i + 1].longitude,
+                            );
+                          }
                           setState(() {
                             Polyline polyline = Polyline(
                                 polylineId: PolylineId("poly"),
                                 color: Color.fromARGB(255, 40, 122, 198),
                                 points: polylineCoordinates);
                             _polyline.add(polyline);
+                            _placeDistance = totalDistance.toStringAsFixed(2);
+                            print('DISTANCE: $_placeDistance km');
                           });
                         },
                       ),
@@ -544,21 +518,21 @@ class _MapsState extends State<Maps> {
                           ),
                     ),
                     Text(
-                      'Distance: ',
+                      'Distance: ${_placeDistance} KM',
                       style: Theme.of(context).textTheme.bodyText1.copyWith(
                             color: Colors.black,
                           ),
                     ),
-                    Text(
-                      calculateDistance(
-                          sourceLatLng.latitude,
-                          sourceLatLng.longitude,
-                          destinationLatLng.latitude,
-                          destinationLatLng.longitude),
-                      style: Theme.of(context).textTheme.bodyText1.copyWith(
-                            color: Colors.black45,
-                          ),
-                    ),
+//                    Text(
+//                      calculateDistance(
+//                          sourceLatLng.latitude,
+//                          sourceLatLng.longitude,
+//                          destinationLatLng.latitude,
+//                          destinationLatLng.longitude),
+//                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+//                            color: Colors.black45,
+//                          ),
+//                    ),
 
                     Text(
                       'Price: ',
@@ -681,24 +655,12 @@ class _MapsState extends State<Maps> {
     ));
   }
 
-  String calculateDistance(lat1, lon1, lat2, lon2) {
+  double _coordinateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
     var c = cos;
     var a = 0.5 -
         c((lat2 - lat1) * p) / 2 +
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    var distance = 12742 * asin(sqrt(a));
-    if (distance < 1) {
-      return (distance * 1000).toStringAsFixed(1) + " m";
-    } else {
-      return distance.toStringAsFixed(1) + ' km';
-    }
+    return 12742 * asin(sqrt(a));
   }
-}
-
-//Create a new class to hold the Co-ordinates we've received from the response data
-
-class LineString {
-  LineString(this.lineString);
-  List<dynamic> lineString;
 }
