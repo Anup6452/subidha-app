@@ -83,22 +83,6 @@ class _WelcomePageState extends State<WelcomePage> {
               height: 5.0,
             ),
             ListTile(
-              leading: Icon(Icons.history),
-              title: new Text('Payment'),
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                        new PaymentPage()));
-              },
-            ),
-            new Divider(
-              color: Colors.white,
-              height: 5.0,
-            ),
-            ListTile(
               leading: Icon(Icons.contact_support),
               title: new Text('Contact Support'),
               onTap: () {

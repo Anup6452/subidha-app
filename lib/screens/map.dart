@@ -663,4 +663,10 @@ class _MapsState extends State<Maps> {
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * asin(sqrt(a));
   }
+
+  static int estimateFair (double _placeDistance) {
+    double baseFare = 50;
+    double distanceFare = _placeDistance * 20 ;
+    double totalFare = baseFare + distanceFare;
+  }
 }
