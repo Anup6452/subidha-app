@@ -13,6 +13,7 @@ class _RideHistoryListState extends State<RideHistoryList> {
 
   @override
   Widget build(BuildContext context) {
+
     Query bookingCollection = FirebaseFirestore.instance
         .collection('booking')
         .where('user_id', isEqualTo: fbAuth.currentUser.uid)

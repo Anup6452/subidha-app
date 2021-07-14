@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rating_dialog/rating_dialog.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class Rating extends StatefulWidget {
   @override
@@ -8,6 +9,7 @@ class Rating extends StatefulWidget {
 }
 
 class _RatingState extends State<Rating> {
+  double rating = 4.0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,8 +20,9 @@ class _RatingState extends State<Rating> {
         automaticallyImplyLeading: false,
       ),
       body: Container(
-        child: Center(
-          child: MaterialButton(
+        child: Column(
+          children: [
+          MaterialButton(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             color: Colors.cyan,
@@ -29,6 +32,47 @@ class _RatingState extends State<Rating> {
             ),
             onPressed: _showRatingAppDialog,
           ),
+
+            Text(
+              "Library First :  'Smooth Star Rating' ",
+              style: TextStyle(fontSize: 20),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            SmoothStarRating(
+              rating: rating,
+              size: 35,
+              filledIconData: Icons.star,
+              halfFilledIconData: Icons.star_half,
+              defaultIconData: Icons.star_border,
+              starCount: 5,
+              allowHalfRating: true,
+              spacing: 2.0,
+              onRated: (value) {
+                setState(() {
+                  rating = value;
+                  print(rating);
+                });
+              },
+            ),
+            Text(
+              "You have Selected : $rating Star",
+              style: TextStyle(fontSize: 15),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              "Library Second:  'Rating_Dialog ' ",
+              style: TextStyle(fontSize: 20, color: Colors.deepOrange),
+            ),
+            RaisedButton(
+              onPressed: () {
+              },
+              child: Text("Open Flutter Rating Dialog Box"),
+            )
+          ],
         ),
       ),
     );

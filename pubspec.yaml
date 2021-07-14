@@ -43,6 +43,7 @@ dependencies:
   flutter_khalti: any
   flutter_polyline_points: ^1.0.0
   rating_dialog: ^2.0.0
+  smooth_star_rating: ^1.0.4+2
 
 dev_dependencies:
   flutter_test:
