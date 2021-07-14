@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,17 +5,34 @@ import 'package:rating_dialog/rating_dialog.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:subidha/custom/rating.dart';
 
-class RideHistoryListTile extends StatelessWidget {
-  final String sourceName;
-  final String destinationName;
-  final String phone_number;
+class RideHistoryListTile extends StatefulWidget {
+  final DocumentSnapshot dataWithDetails;
 
   RideHistoryListTile({
-    @required this.sourceName,
-    @required this.destinationName,
-    @required this.phone_number,
+    @required this.dataWithDetails,
   });
-  double rating = 4.0;
+
+  @override
+  _RideHistoryListTileState createState() => _RideHistoryListTileState();
+}
+
+class _RideHistoryListTileState extends State<RideHistoryListTile> {
+  double rating = 3.5;
+  bool dataLoading = true;
+  bool isRated = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkRated().then((value) {
+      setState(() {
+        isRated = value;
+        dataLoading = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final FirebaseAuth fbAuth = FirebaseAuth.instance;
@@ -46,7 +62,7 @@ class RideHistoryListTile extends StatelessWidget {
               ),
             ),
             title: Text(
-              sourceName,
+              widget.dataWithDetails['sourceName'],
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -65,7 +81,7 @@ class RideHistoryListTile extends StatelessWidget {
               ),
             ),
             title: Text(
-              destinationName,
+              widget.dataWithDetails['destinationName'],
               style: TextStyle(
                 color: Colors.black,
               ),
@@ -84,57 +100,71 @@ class RideHistoryListTile extends StatelessWidget {
               ),
             ),
             title: Text(
-              phone_number,
+              widget.dataWithDetails['phone_number'],
               style: TextStyle(
                 color: Colors.black,
               ),
             ),
           ),
-
           SizedBox(
             height: 10,
           ),
-          Row(
+          dataLoading ? LinearProgressIndicator() : Row(
             children: [
-            SmoothStarRating(
-              rating: rating,
-              size: 35,
-              filledIconData: Icons.star,
-              halfFilledIconData: Icons.star_half,
-              defaultIconData: Icons.star_border,
-              starCount: 5,
-              allowHalfRating: true,
-              spacing: 2.0,
-              onRated: (value) {
-                setState(() {
-                  rating = value;
-                  print(rating);
-                });
-              },
-            ),
-
-              MaterialButton(
-                  color: Theme.of(context).primaryColor,
-                  child: Text('Submit'),
-                  onPressed: () async {
-    try {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    FirebaseFirestore firebaseFireStore = FirebaseFirestore.instance;
-    firebaseFireStore.collection('booking').add({
-    'user_id': auth.currentUser.uid ?? "",
-    'rating': rating,
-    'rider_id': '',
-    });
-    } catch (e) {
-    print(e.toString());
-    }
-    },
-  ),
+              AbsorbPointer(
+                absorbing: isRated,
+                child: SmoothStarRating(
+                  rating: rating,
+                  size: 35,
+                  filledIconData: Icons.star,
+                  halfFilledIconData: Icons.star_half,
+                  defaultIconData: Icons.star_border,
+                  starCount: 5,
+                  allowHalfRating: true,
+                  spacing: 2.0,
+                  onRated: (value) {
+                    setState(() {
+                      rating = value;
+                    });
+                  },
+                ),
+              ),
+              isRated ? SizedBox.shrink() : MaterialButton(
+                color: Theme.of(context).primaryColor,
+                child: Text('Submit'),
+                onPressed: () async {
+                  setState(() {
+                    dataLoading = true;
+                  });
+                  try {
+                    DocumentSnapshot documentSnapshot = await widget.dataWithDetails.reference.get();
+                    FirebaseFirestore.instance.collection('booking').doc(documentSnapshot.id).update({
+                      'rating': rating,
+                    });
+                  } catch (e) {
+                    print(e.toString());
+                  }
+                  setState(() async {
+                    isRated = await checkRated();
+                    dataLoading = false;
+                  });
+                },
+              ),
             ],
           ),
         ],
       ),
     );
   }
-  void setState(Null Function() param0) {}
+
+  Future<bool> checkRated() async {
+    DocumentSnapshot documentSnapshot = await widget.dataWithDetails.reference.get();
+    if(documentSnapshot.data().containsKey('rating')) {
+      setState(() {
+        rating = documentSnapshot['rating'];
+      });
+      return true;
+    }
+    return false;
+  }
 }

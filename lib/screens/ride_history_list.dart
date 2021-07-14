@@ -40,9 +40,7 @@ class _RideHistoryListState extends State<RideHistoryList> {
                     List.generate(bookingSnapshot.data.docs.length, (index) {
                   var dataWithDetails = bookingSnapshot.data.docs[index];
                   return RideHistoryListTile(
-                    sourceName: dataWithDetails['sourceName'],
-                    destinationName: dataWithDetails['destinationName'],
-                    phone_number: dataWithDetails['phone_number'],
+                    dataWithDetails: dataWithDetails,
                   );
                 }),
               );
