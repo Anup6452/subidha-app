@@ -607,6 +607,7 @@ class _MapsState extends State<Maps> {
         'user_email': auth.currentUser.email ?? "",
         'profile_img': auth.currentUser.photoURL ?? "",
         'phone_number': phoneController.value.text,
+        'distance': totalDistance,
         'isRiderFound': false,
         'hasMeet': false,
         'isCompleted': false,
