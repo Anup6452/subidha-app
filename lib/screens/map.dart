@@ -88,7 +88,7 @@ class _MapsState extends State<Maps> {
   PolylinePoints polylinePoints = PolylinePoints();
   List<LatLng> polylineCoordinates = [];
 
-
+  double totalDistance = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +107,15 @@ class _MapsState extends State<Maps> {
             myLocationButtonEnabled: false,
             onTap: (latLng) async {
               if (destinationLatLng == null || sourceLatLng == null) {
+                for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+                  totalDistance += _coordinateDistance(
+                    polylineCoordinates[i].latitude,
+                    polylineCoordinates[i].longitude,
+                    polylineCoordinates[i + 1].latitude,
+                    polylineCoordinates[i + 1].longitude,
+                  );
+                }
+                _placeDistance = totalDistance.toStringAsFixed(2);
                 try {
                   String name = await getPlace(latLng);
                   if (sourceLatLng == null) {
@@ -234,6 +243,7 @@ class _MapsState extends State<Maps> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
+                                    totalDistance = 0.0;
                                     Marker marker = _markers.firstWhere(
                                         (marker) =>
                                             marker.markerId.value ==
@@ -274,6 +284,7 @@ class _MapsState extends State<Maps> {
                                   color: Colors.red,
                                 ),
                                 onPressed: () {
+                                  totalDistance = 0.0;
                                   Marker marker = _markers.firstWhere(
                                       (marker) =>
                                           marker.markerId.value ==
@@ -294,7 +305,7 @@ class _MapsState extends State<Maps> {
                       MaterialButton(
                         child: Text('View direction',style: TextStyle(color: Colors.black,),),
                         onPressed: () async {
-                          double totalDistance = 0.0;
+
                           if(sourceLatLng == null || destinationLatLng == null) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Select both source and destination first', style: TextStyle(color: Colors.white),),
@@ -325,7 +336,6 @@ class _MapsState extends State<Maps> {
                                 points: polylineCoordinates);
                             _polyline.add(polyline);
                             _placeDistance = totalDistance.toStringAsFixed(2);
-                            print('DISTANCE: $_placeDistance km');
                           });
                         },
                       ),
@@ -518,11 +528,17 @@ class _MapsState extends State<Maps> {
                           ),
                     ),
                     Text(
-                      'Distance: ${_placeDistance} KM',
+                      'Distance: $_placeDistance KM',
                       style: Theme.of(context).textTheme.bodyText1.copyWith(
                             color: Colors.black,
                           ),
                     ),
+                    Text(
+                      'Price: ${estimateFair(switchValue, totalDistance).toStringAsFixed(0)}',
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                        color: Colors.black,
+                      ),),
+                    // ),
 //                    Text(
 //                      calculateDistance(
 //                          sourceLatLng.latitude,
@@ -533,25 +549,6 @@ class _MapsState extends State<Maps> {
 //                            color: Colors.black45,
 //                          ),
 //                    ),
-
-                    Text(
-                      'Price: ',
-                      style: Theme.of(context).textTheme.bodyText1.copyWith(
-                            color: Colors.black,
-                          ),
-                    ),
-                    Text(
-                      'Rs. 90 for first ride and price adds up by Rs. 30 per additional km (for bike).',
-                      style: Theme.of(context).textTheme.bodyText1.copyWith(
-                            color: Colors.black45,
-                          ),
-                    ),
-                    Text(
-                      'Rs. 160 for first ride and price adds up by Rs. 60 per additional km (for taxi).',
-                      style: Theme.of(context).textTheme.bodyText1.copyWith(
-                            color: Colors.black45,
-                          ),
-                    ),
                   ],
                 ),
               ),
@@ -662,5 +659,20 @@ class _MapsState extends State<Maps> {
         c((lat2 - lat1) * p) / 2 +
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * asin(sqrt(a));
+  }
+
+   double estimateFair (bool ride, double _placeDistance) {
+    double baseFare;
+    double multiplier;
+    if(ride) {
+      baseFare = 100;
+      multiplier = 40;
+    }
+    else {
+      baseFare = 50;
+      multiplier = 20;
+    }
+    double distanceFare = _placeDistance * multiplier;
+    return baseFare + distanceFare;
   }
 }
